@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
   #config.vm.box = "centos/7"
   config.vm.define "salt" do |master_box|
-      master_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
+      #master_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       master_box.vm.synced_folder "salt/master_salt/", "/srv/salt/"
       master_box.vm.network "private_network", ip: "192.168.33.10"
       #master_box.vm.synced_folder "code/master/", "/code/master/"
@@ -29,11 +29,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           master_salt.log_level = "info"
           master_salt.run_highstate = true
           master_salt.seed_master = {
-              master: 'salt/keys/master.pub',
-              minion1: 'salt/keys/minion1.pub',
-              minion2: 'salt/keys/minion2.pub'
+              master:                   'salt/keys/master.pub',
+              mysql_minion:             'salt/keys/mysql_minion.pub',
+              redis_minion:             'salt/keys/redis_minion.pub',
+              kubernetes_minion:        'salt/keys/kubernetes_minion.pub', # -- container manager
+              kibana_minion:            'salt/keys/kibana_minion.pub',     # -- log viewer
+              php_frontend_minion:      'salt/keys/php_frontend_minion.pub',
+              php_lob_api_minion:       'salt/keys/php_lob_api_minion.pub',
+              php_api_payment_minion:   'salt/keys/php_api_payment_minion.pub',
+              dev_minion:               'salt/keys/dev_minion.pub'
           }
-          salt.install_type = :stable
+          master_salt.install_type = :stable
       end
   end
   config.vm.define "php_api_payment" do |php_api_payment_box|
@@ -93,7 +99,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           php_frontend_salt.run_highstate = true
       end
   end
+  config.vm.define "kibana" do |kibana_box|
+      kibana_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
+      kibana_box.vm.synced_folder "salt/kibana/", "/srv/salt/"
+      kibana_box.vm.synced_folder "code/kibana/", "/code/"
+      kibana_box.vm.network "private_network", ip: "192.168.33.30"
+      #kibana_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
+      kibana_box.vm.provider "virtualbox" do |vb|
+          vb.memory = "256"
+      end
+      kibana_box.vm.provision "salt" do |kibana_salt|
+          kibana_salt.minion_config = "salt/configs/kibana_minion.conf"
+          kibana_salt.minion_key = "salt/keys/kibana_minion.pem"
+          kibana_salt.minion_pub = "salt/keys/kibana_minion.pub"
+          #kibana_salt.minion_config = "salt/kibana_minion.yml"
+          kibana_salt.colorize = true
+          kibana_salt.log_level = "info"
+          kibana_salt.run_highstate = true
+      end
+  end
   config.vm.define "kubernetes" do |kubernetes_box|
+      #this should be a core os box - since that would all run docker containers
       kubernetes_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       kubernetes_box.vm.synced_folder "salt/kubernetes/", "/srv/salt/"
       kubernetes_box.vm.synced_folder "code/kubernetes/", "/code/"
@@ -121,7 +147,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       redis_box_box.vm.network "private_network", ip: "192.168.33.40"
       #redis_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       redis_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "512"
+          vb.memory = "256"
       end
       redis_box.vm.provision "salt" do |redis_salt|
           redis_salt.minion_config = "salt/configs/redis_minion.conf"
@@ -133,7 +159,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           redis_salt.run_highstate = true
       end
   end
-  config.vm.define "dev" do |dev_box|
+  config.vm.define "personal_dev" do |dev_box|
       dev_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       dev_box.vm.synced_folder "salt/dev/", "/srv/salt/"
       dev_box.vm.synced_folder "code/dev/", "/code/"
@@ -161,7 +187,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mysql_box.vm.network "private_network", ip: "192.168.33.50"
       #mysql_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       mysql_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "512"
+          vb.memory = "256"
       end
       mysql_box.vm.provision "salt" do |mysql_salt|
           mysql_salt.minion_config = "salt/configs/mysql_minion.conf"
