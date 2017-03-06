@@ -1,4 +1,3 @@
-# vi:syntax=yaml
 master: 192.168.33.10
 id: "mysql_minion"
 file_client: remote
@@ -21,3 +20,4 @@ grains:
     - apache-php-5
     - java-8-jdk
 
+# vi:syntax=yaml

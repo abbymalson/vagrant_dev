@@ -1,20 +1,46 @@
+# vi:syntax=yaml
 base:
   '*':
     - base.sanity
     - wheel
     - users
+  'roles:webserver-apache':
+    - match: grain
+    - webserver.apache 
+  'role:php-apache':
+    - match: grain
+    - php.apache 
+  'role:logstash-general':
+    - match: grain
+    - logstash.general 
+  'role:logstash-mysql':
+    - match: grain
+    - logstash.mysql
+  'role:java-jdk8':
+    - match: grain
+    - java.jdk8
+  'role:database-mysql-server':
+    - match: grain
+    - database.mysql-server
+  'role:salt-master':
+    - match: grain
+    - continuous_integration.salt.master
 #  'salt-master':
 #    - match: grain
 #    - salt
-  'role:webserver-nginx':
-    - match: grain
-    - nginx
+#  'role:webserver-nginx':
+#    - match: grain
+#    - nginx
 #  'role:db-elasticsearch':
 #    - match: grain
 #    - elasticsearch
-  'role:kibana-server':
-    - match: grain
-    - nginx
+#  'role:webserver-nginx':
+#    - match: grain
+#  'role:webserver-nginx':
+#    - match: grain
+#  'role:kibana-server':
+#    - match: grain
+#    - nginx
 #    - elasticsearch
 #    - log-stash
 #    - kibana
