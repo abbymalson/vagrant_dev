@@ -1,4 +1,0 @@
-master: 192.168.33.10
-file_client: remote
-grains:
-  server_purpose: php_lob_api
