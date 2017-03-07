@@ -13,11 +13,12 @@ pillar_roots:
 
 grains:
   roles:
-    - mysql-57-server
+    - minion
+    - database-mysql-57-server
     - logstash-5x-general
     - logstash-5x-mysql
-    - webserver-apache-2
-    - apache-php-5
-    - java-8-jdk
+    - webserver-apache2
+    - programming-php5-apache
+    - programming-java-jdk8
 
 # vi:syntax=yaml

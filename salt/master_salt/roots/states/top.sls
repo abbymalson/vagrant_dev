@@ -4,24 +4,28 @@ base:
     - base.sanity
     - wheel
     - users
-  'roles:webserver-apache':
+  'roles:minion':
+    - match: grain
+    - continuous_integration.salt.minion
+  'roles:webserver-apache2':
     - match: grain
     - webserver.apache 
-  'role:php-apache':
-    - match: grain
-    - php.apache 
-  'role:logstash-general':
-    - match: grain
-    - logstash.general 
-  'role:logstash-mysql':
-    - match: grain
-    - logstash.mysql
-  'role:java-jdk8':
-    - match: grain
-    - java.jdk8
-  'role:database-mysql-server':
+  'roles:database-mysql-57-server':
     - match: grain
     - database.mysql-server
+# These are supposed to be "roles" ... not "role"
+  'role:php-apache':
+    - match: grain
+    - programming.php.apache 
+  'role:logstash-5x-general':
+    - match: grain
+    - logstash.general 
+  'role:logstash-5x-mysql':
+    - match: grain
+    - logstash.mysql
+  'role:programming-java-jdk8':
+    - match: grain
+    - programming.java.jdk8
   'role:salt-master':
     - match: grain
     - continuous_integration.salt.master
