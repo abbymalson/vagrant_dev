@@ -14,14 +14,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
   #config.vm.box = "centos/7"
   config.vm.define "salt" do |master_box|
+      master_box.vm.box = "ubuntu/xenial64"
       #master_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       master_box.vm.synced_folder "salt/master_salt/", "/srv/salt/"
       master_box.vm.network "private_network", ip: "192.168.33.10"
       master_box.vm.hostname = "salt-master"
-      #master_box.vm.synced_folder "code/master/", "/code/master/"
+      master_box.vm.synced_folder "code/master/", "/code/"
       #master_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       master_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "512"
+          vb.memory = "640"
       end
       master_box.vm.provision "salt" do |master_salt|
           master_salt.install_master = true
