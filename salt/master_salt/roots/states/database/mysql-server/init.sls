@@ -1,22 +1,22 @@
-install_required_packages_mysql:
-  pkg.installed:
-    - names:
-      - debconf-utils
-      - python-mysqldb
+# vi:syntax=yaml
 
-Setup_mysql_again:
-  cmd.run:
-    - name: export DEBIAN_FRONTEND=noninteractive
-    - statefile: True
+python-mysqldb:
+  pkg.installed
+
+debconf-utils:
+  pkg.installed
 
 mysql_setup:
   debconf.set:
     - name: mysql-server
     - data:
-      'mysql-server/root_password': {'type': 'password', 'value': 'dilbert'}
-      'mysql-server/root_password_again': {'type': 'password', 'value': 'dilbert'}
+        'mysql-server/root_password': {'type': 'password', 'value': 'dilbert'}
+        'mysql-server/root_password_again': {'type': 'password', 'value': 'dilbert'}
     - require:
       - pkg: debconf-utils
+    - unless:
+      - dpkg-query -s mysql-server
+
 
 install_mysql:
   pkg.installed:
