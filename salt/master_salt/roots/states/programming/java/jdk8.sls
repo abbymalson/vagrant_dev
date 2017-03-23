@@ -7,7 +7,10 @@
 jdk-extract:
   archive.extracted:
     - name: /opt/
-    - source: salt://programming/java/jdk-8u121-linux-i586.tar.gz
+#    - source: salt://programming/java/jdk-8u121-linux-i586.tar.gz # 32 bit
+    - source: salt://programming/java/jdk-8u121-linux-x64.tar.gz
+    - user: vagrant
+    - group: vagrant
     - if_missing: /opt/jdk1.8.0_121/
 
 # Create symlink (so /opt/java)

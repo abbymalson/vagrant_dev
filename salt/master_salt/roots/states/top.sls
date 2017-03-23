@@ -18,9 +18,13 @@ base:
 #     Not an option for Ubuntu 14.04
     - match: grain
     - programming.java.jdk8
+  'roles:database-elasticsearch':
+    - match: grain
+    - database.elasticsearch.general 
   'roles:logstash-5x-general':
     - match: grain
     - logstash.general 
+    - kibana.filebeat.general
 # These are supposed to be "roles" ... not "role"
   'role:php-apache':
     - match: grain
@@ -51,3 +55,4 @@ base:
 #    - elasticsearch
 #    - log-stash
 #    - kibana
+# vi:syntax=yaml

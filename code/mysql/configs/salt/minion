@@ -15,8 +15,11 @@ grains:
   roles:
     - minion
     - database-mysql-57-server
+    - database-elasticsearch
     - logstash-5x-general
     - logstash-5x-mysql
+    - filebeat-5x
+    - metricbeat-5x
     - webserver-apache2
     - programming-php5-apache
     - programming-java-jdk8

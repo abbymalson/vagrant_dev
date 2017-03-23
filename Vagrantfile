@@ -14,13 +14,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
   #config.vm.box = "centos/7"
   config.vm.define "salt" do |master_box|
-      #master_box.vm.box = "ubuntu/xenial64"
       #master_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       master_box.vm.synced_folder "salt/master_salt/", "/srv/salt/"
       master_box.vm.synced_folder "code/master/", "/code/"
       master_box.vm.network "private_network", ip: "192.168.33.10"
       master_box.vm.hostname = "salt-master"
-      master_box.vm.synced_folder "code/master/", "/code/"
       #master_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       master_box.vm.provider "virtualbox" do |vb|
           vb.memory = "512"
@@ -46,7 +44,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           master_salt.install_type = :stable
       end
   end
-  # {{{1
   #config.vm.define "php_api_payment" do |php_api_payment_box|
       #php_api_payment_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       #php_api_payment_box.vm.synced_folder "salt/php_api_payment/", "/srv/salt/"
@@ -67,6 +64,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       #end
   #end
   #config.vm.define "php_lob_api" do |php_lob_api_box|
+      #php_lob_api_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
+      #php_lob_api_box.vm.synced_folder "salt/php_lob_api/", "/srv/salt/"
+      #php_lob_api_box.vm.synced_folder "code/php_lob_api/", "/code/"
       #php_lob_api_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       #php_lob_api_box.vm.synced_folder "salt/php_lob_api/", "/srv/salt/"
       #php_lob_api_box.vm.synced_folder "code/php_lob_api/", "/code/"
@@ -134,9 +134,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           #vb.memory = "256"
       #end
       #kubernetes_box.vm.provision "salt" do |kubernetes_salt|
-          #kubernetes_salt.minion_config = "salt/configs/kubernetes_minion.conf"
-          #kubernetes_salt.minion_key = "salt/keys/kubernetes_minion.pem"
-          #kubernetes_salt.minion_pub = "salt/keys/kubernetes_minion.pub"
           #kubernetes_salt.minion_config = "salt/kubernetes_minion.yml"
           #kubernetes_salt.colorize = true
           #kubernetes_salt.log_level = "info"
@@ -184,18 +181,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           #dev_salt.run_highstate = true
       #end
   #end
-  # }}}1
   config.vm.define "mysql" do |mysql_box|
       #mysql_box.vm.network "forwarded_port", guest: 80, host: 80
       #mysql_box.vm.network "forwarded_port", guest: 3306, host: 3306
       #mysql_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       mysql_box.vm.hostname = "mysql"
       #mysql_box.vm.synced_folder "salt/mysql/", "/srv/salt/"
-      mysql_box.vm.synced_folder "code/mysql/", "/code/salt/" # mostly to store salt minion configurations
+      mysql_box.vm.synced_folder "code/mysql/", "/code/salt/"
       mysql_box.vm.network "private_network", ip: "192.168.33.50"
       #mysql_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       mysql_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "512"
+          vb.memory = "1024"
       end
       mysql_box.vm.provision "salt" do |mysql_salt|
           #mysql_salt.minion_config = "salt/configs/mysql_minion.conf"

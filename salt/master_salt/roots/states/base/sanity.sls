@@ -5,3 +5,4 @@ foundation:
       - tmux
       - htop
       - bash-completion
+      - openssh-server

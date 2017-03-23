@@ -19,3 +19,4 @@ ssh_key_{{name}}:
     - purge: {{user.purge}}
   {% endif %}
 {% endfor %}
+# vi:syntax=yaml
