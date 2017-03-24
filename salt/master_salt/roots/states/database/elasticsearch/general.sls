@@ -1,9 +1,16 @@
 
+copy-elasticsearch-to-server:
+  file.managed:
+    - name: /tmp/elasticsearch.tar.gz
+    - source: salt://database/elasticsearch/elasticsearch-5.2.2.tar.gz
+    - user: root
+    - group: root
+    - mode: 755
 # This is the general configuration - again using tar.gz setup
 elasticsearch-extract:
   archive.extracted:
     - name: /opt/
-    - source: salt://database/elasticsearch/elasticsearch-5.2.2.tar.gz
+    - source: /tmp/elasticsearch.tar.gz
     - user: vagrant
     - group: vagrant
     - if_missing: /opt/elasticsearch-5.2.2/
@@ -19,4 +26,8 @@ elasticsearch-extract:
 # https://www.elastic.co/guide/en/elasticsearch/plugins/current/index.html
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
 
+cleanup-tmp-elasticsearch:
+  file.absent:
+    - name: /tmp/elasticsearch.tar.gz
+    
 # vi:syntax=yaml

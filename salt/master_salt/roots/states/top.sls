@@ -36,23 +36,16 @@ base:
     - match: grain
     - continuous_integration.salt.master
 
-#  'salt-master':
-#    - match: grain
-#    - salt
-#  'role:webserver-nginx':
-#    - match: grain
-#    - nginx
-#  'role:db-elasticsearch':
-#    - match: grain
-#    - elasticsearch
-#  'role:webserver-nginx':
-#    - match: grain
-#  'role:webserver-nginx':
-#    - match: grain
-#  'role:kibana-server':
-#    - match: grain
-#    - nginx
-#    - elasticsearch
-#    - log-stash
-#    - kibana
+  'salt-master':
+    - match: grain
+    - salt
+  'role:webserver-nginx':
+    - match: grain
+    - webserver.nginx
+  'role:kibana-server':
+    - match: grain
+    - nginx
+    - elasticsearch
+    - log-stash
+    - kibana
 # vi:syntax=yaml
