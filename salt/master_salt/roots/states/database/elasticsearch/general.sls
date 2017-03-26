@@ -1,3 +1,6 @@
+# Modification to use repositories
+# wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.tar.gz
+
 
 copy-elasticsearch-to-server:
   file.managed:
