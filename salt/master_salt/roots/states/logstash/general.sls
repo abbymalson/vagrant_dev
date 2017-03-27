@@ -26,4 +26,17 @@ cleanup-tmp-logstash:
   file.absent:
     - name: /tmp/logstash.tar.gz
     
+# Link the config files to our files (Development)
+/var/www/html/info.php:
+  file.symlink:
+    - target: /srv/salt/php/phpinfo.php
+
+# Or we can do it correcctly and copy the files to the appropriate directories (test/production)
+#/usr/share/phpmyadmin/libraries/config.default.php:
+#  file.managed:
+#    - source: 
+#      - salt://phpmyadmin/libraries-config.default.php
+#    - user: root
+#    - group: root
+#    - mode: 644
 # may have to create a directory for /opt/logstash/logs
