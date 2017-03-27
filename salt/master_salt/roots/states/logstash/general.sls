@@ -1,4 +1,5 @@
 # vi:syntax=yaml
+# curl -L -O https://artifacts.elastic.co/downloads/logstash/logstash-5.2.2.tar.gz
 
 copy-logstash-to-server:
   file.managed:
