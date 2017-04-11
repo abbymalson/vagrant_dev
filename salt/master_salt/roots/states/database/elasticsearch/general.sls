@@ -1,3 +1,5 @@
+# vi:syntax=yaml
+
 # Modification to use repositories
 # wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.tar.gz
 
@@ -33,4 +35,42 @@ cleanup-tmp-elasticsearch:
   file.absent:
     - name: /tmp/elasticsearch.tar.gz
     
-# vi:syntax=yaml
+
+# mv /opt/elasticsearch/config to /opt/elasticsearch/config.old/
+# (for now) symlink elasticsearch/config /code/salt/configs/elasticsearch/ (you can file manage that directory contents later)
+# ln -s /code/salt/configs/elasticsearch/ /opt/elasticsearch/config
+/opt/elasticsearch/config/:
+  file.symlink:
+    - target: /code/salt/configs/elasticsearch/
+    - force: True
+
+# /opt/elasticsearch/bin/system-install # ??
+# bin/logstash –f apache.config --config.reload.automatic # automatic config reloading
+# need to have elasticsearch running first
+# may have to create a directory for /opt/logstash/logs
+
+# ./bin/elasticsearch -Epath.conf=/path/to/my/config/
+# --------- config value settings ------------
+# path.data: /var/lib/elasticsearch
+# path.logs: /var/log/elasticsearch
+# Security: https://www.elastic.co/guide/en/elasticsearch/reference/current/secure-settings.html # TODO
+# Bootstrap Checks: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html # TODO
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/system-config.html # TODO
+# IMPORTANT: As soon as you configure a network setting like network.host, Elasticsearch
+# assumes that you are moving to production and will upgrade the above warnings to exceptions.
+
+# Should have it's own user/service account
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/stopping-elasticsearch.html # TODO
+
+
+
+
+
+
+
+
+
+
+
+
+

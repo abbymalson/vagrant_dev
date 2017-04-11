@@ -191,7 +191,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mysql_box.vm.network "private_network", ip: "192.168.33.50"
       #mysql_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
       mysql_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "1024"
+          vb.memory = "4096"
       end
       mysql_box.vm.provision "salt" do |mysql_salt|
           #mysql_salt.minion_config = "salt/configs/mysql_minion.conf"
