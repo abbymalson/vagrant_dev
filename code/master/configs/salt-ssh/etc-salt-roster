@@ -1,0 +1,7 @@
+web1:
+  host: 192.168.42.1 # The IP address or DNS hostname
+  user: fred         # Remote executions will be excuted as user fred
+  passwd: foobarbaz  # The password to use for login, if omitted, keys are used
+  sudo: True         # Whether to sudo to root, not enabled by default (only works if NOPASSWD is set for user in /etc/sudoers)
+web2:
+  host: 192.168.42.2
