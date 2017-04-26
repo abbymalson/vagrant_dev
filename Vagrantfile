@@ -44,6 +44,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           master_salt.install_type = :stable
       end
   end
+  config.vm.define "mysql" do |mysql_box|
+      #mysql_box.vm.network "forwarded_port", guest: 80, host: 80
+      #mysql_box.vm.network "forwarded_port", guest: 3306, host: 3306
+      #mysql_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
+      mysql_box.vm.hostname = "mysql"
+      # TODO
+      #mysql_box.vm.synced_folder "salt/mysql/", "/srv/salt/"
+      mysql_box.vm.synced_folder "code/mysql/", "/code/salt/"
+      mysql_box.vm.network "private_network", ip: "192.168.33.50"
+      #mysql_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
+      mysql_box.vm.provider "virtualbox" do |vb|
+          vb.memory = "4096"
+      end
+      mysql_box.vm.provision "salt" do |mysql_salt|
+          #mysql_salt.minion_config = "salt/configs/mysql_minion.conf"
+          mysql_salt.minion_config = "code/mysql/configs/salt/minion"
+          mysql_salt.minion_key = "salt/keys/mysql_minion.pem"
+          mysql_salt.minion_pub = "salt/keys/mysql_minion.pub"
+          mysql_salt.colorize = true
+          mysql_salt.log_level = "info"
+          mysql_salt.run_highstate = true
+      end
+  end
   #config.vm.define "php_api_payment" do |php_api_payment_box|
       #php_api_payment_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
       #php_api_payment_box.vm.synced_folder "salt/php_api_payment/", "/srv/salt/"
@@ -181,26 +204,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           #dev_salt.run_highstate = true
       #end
   #end
-  config.vm.define "mysql" do |mysql_box|
-      #mysql_box.vm.network "forwarded_port", guest: 80, host: 80
-      #mysql_box.vm.network "forwarded_port", guest: 3306, host: 3306
-      #mysql_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
-      mysql_box.vm.hostname = "mysql"
-      #mysql_box.vm.synced_folder "salt/mysql/", "/srv/salt/"
-      mysql_box.vm.synced_folder "code/mysql/", "/code/salt/"
-      mysql_box.vm.network "private_network", ip: "192.168.33.50"
-      #mysql_box.vm.synced_folder "~/.ssh/", "/home/vagrant/.ssh/"
-      mysql_box.vm.provider "virtualbox" do |vb|
-          vb.memory = "4096"
-      end
-      mysql_box.vm.provision "salt" do |mysql_salt|
-          #mysql_salt.minion_config = "salt/configs/mysql_minion.conf"
-          mysql_salt.minion_config = "code/mysql/configs/salt/minion"
-          mysql_salt.minion_key = "salt/keys/mysql_minion.pem"
-          mysql_salt.minion_pub = "salt/keys/mysql_minion.pub"
-          mysql_salt.colorize = true
-          mysql_salt.log_level = "info"
-          mysql_salt.run_highstate = true
-      end
-  end
 end

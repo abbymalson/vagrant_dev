@@ -39,10 +39,13 @@ cleanup-tmp-elasticsearch:
 # mv /opt/elasticsearch/config to /opt/elasticsearch/config.old/
 # (for now) symlink elasticsearch/config /code/salt/configs/elasticsearch/ (you can file manage that directory contents later)
 # ln -s /code/salt/configs/elasticsearch/ /opt/elasticsearch/config
-/opt/elasticsearch/config/:
-  file.symlink:
-    - target: /code/salt/configs/elasticsearch/
-    - force: True
+# ------------------------
+# I don't think we need this ...
+# ------------------------
+#/opt/elasticsearch/config/:
+#  file.symlink:
+#    - target: /code/salt/configs/elasticsearch/
+#    - force: True
 
 # /opt/elasticsearch/bin/system-install # ??
 # bin/logstash –f apache.config --config.reload.automatic # automatic config reloading

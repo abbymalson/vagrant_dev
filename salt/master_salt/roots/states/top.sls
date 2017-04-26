@@ -24,7 +24,13 @@ base:
   'roles:logstash-5x-general':
     - match: grain
     - logstash.general 
-    - kibana.filebeat.general
+#    - kibana.filebeat.general
+  'roles:kibana-5x-general':
+    - match: grain
+    - kibana.general
+#    - webserver.nginx.general
+#    - database.elasticsearch.general
+#    - logstash.general
 # These are supposed to be "roles" ... not "role"
   'role:php-apache':
     - match: grain
@@ -42,10 +48,4 @@ base:
   'role:webserver-nginx':
     - match: grain
     - webserver.nginx
-  'role:kibana-server':
-    - match: grain
-    - nginx
-    - elasticsearch
-    - log-stash
-    - kibana
 # vi:syntax=yaml

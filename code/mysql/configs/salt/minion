@@ -23,5 +23,7 @@ grains:
     - webserver-apache2
     - programming-php5-apache
     - programming-java-jdk8
+    - programming-java-jdk8
+    - kibana-5x-general
 
 # vi:syntax=yaml
