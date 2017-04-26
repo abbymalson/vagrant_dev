@@ -1,0 +1,50 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: elasticsearch 
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: elasticsearch
+# Description: This file starts and stops elasticsearch server
+# 
+### END INIT INFO
+
+ELASTICSEARCH_DIR=/opt/elasticsearch/
+export JAVA_HOME=/opt/java/
+
+#FILES=/opt/elasticsearch/config/*.conf
+#ELASTICSEARCH_CONFIG_STRING=" "
+#for f in $FILES
+#do
+  # echo "Processing $f file..."
+  # take action on each file. $f store current file name
+#  ELASTICSEARCH_CONFIG_STRING="$ELASTICSEARCH_CONFIG_STRING -f $f"
+#done
+#echo $ELASTICSEARCH_CONFIG_STRING
+
+case "$1" in
+ start)
+   #su elasticsearch -c $ELASTICSEARCH_DIR/bin/elasticsearch
+   $ELASTICSEARCH_DIR/bin/elasticsearch # $ELASTICSEARCH_CONFIG_STRING
+   # http://stackoverflow.com/questions/12195868/java-security-accesscontrolexception-when-using-ant-but-runs-ok-when-invoking-j
+   ;;
+ stop)
+   su elasticsearch -c $ELASTICSEARCH_DIR/bin/elasticsearch
+   sleep 10
+   ;;
+ restart)
+   su elasticsearch -c $ELASTICSEARCH_DIR/bin/elasticsearch
+   sleep 20
+   su elasticsearch -c $ELASTICSEARCH_DIR/bin/elasticsearch
+   ;;
+ *)
+   echo "Usage: elasticsearch {start|stop|restart}" >&2
+   exit 3
+   ;;
+esac
+
+#stop_elasticsearchprocess() {
+#	pkill -P 1 -f "elasticsearch
+#}
+

@@ -1,0 +1,48 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: logstash 
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: logstash
+# Description: This file starts and stops logstash server
+# 
+### END INIT INFO
+
+LOGSTASH_DIR=/opt/logstash/
+export JAVA_HOME=/opt/java/
+
+FILES=/opt/logstash/config/*.conf
+LOGSTASH_CONFIG_STRING=" "
+for f in $FILES
+do
+  # echo "Processing $f file..."
+  # take action on each file. $f store current file name
+  LOGSTASH_CONFIG_STRING="$LOGSTASH_CONFIG_STRING -f $f"
+done
+echo $LOGSTASH_CONFIG_STRING
+
+case "$1" in
+ start)
+   #su logstash -c $LOGSTASH_DIR/bin/logstash
+   $LOGSTASH_DIR/bin/logstash $LOGSTASH_CONFIG_STRING
+   ;;
+ stop)
+   su logstash -c $LOGSTASH_DIR/bin/logstash
+   sleep 10
+   ;;
+ restart)
+   su logstash -c $LOGSTASH_DIR/bin/logstash
+   sleep 20
+   su logstash -c $LOGSTASH_DIR/bin/logstash
+   ;;
+ *)
+   echo "Usage: logstash {start|stop|restart}" >&2
+   exit 3
+   ;;
+esac
+
+#stop_logstashprocess() {
+#	pkill -P 1 -f "logstash
+#}

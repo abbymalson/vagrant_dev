@@ -32,4 +32,10 @@ jdk-extract:
 cleanup-tmp-jdk:
   file.absent:
     - name: /tmp/jdk.tar.gz
+
+# add symlink java to /usr/bin/java
+/usr/bin/java:
+  file.symlink:
+    - target: /opt/java/bin/java
+    - force: True
     
