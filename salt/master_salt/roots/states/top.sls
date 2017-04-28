@@ -15,7 +15,7 @@ base:
   'roles:programming-java-jdk8':
 #     use openjdk
 #     Oracle is not the way
-#     Not an option for Ubuntu 14.04
+#     Not an option for Ubuntu 14.04 (trusty)
     - match: grain
     - programming.java.jdk8
   'roles:database-elasticsearch':
