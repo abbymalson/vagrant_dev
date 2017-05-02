@@ -36,10 +36,15 @@ cleanup-tmp-kibana:
 # ----------------------------------
 # Don't think I need this yet
 # ----------------------------------
+# Not working yet ...
 /opt/kibana/config/:
   file.symlink:
     - target: /code/salt/configs/kibana/
     - force: True
+    # ln -s /code/salt/configs/kibana/ /opt/kibana/config
+    #
+    #- target: /vagrant/code/mysql/configs/kibana/
+    #- target: /code/mysql/configs/kibana/
 
 # File download
 #  wget https://artifacts.elastic.co/downloads/kibana/kibana-5.2.2-linux-x86_64.tar.gz 

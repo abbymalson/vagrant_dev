@@ -5,3 +5,9 @@ web1:
   sudo: True         # Whether to sudo to root, not enabled by default (only works if NOPASSWD is set for user in /etc/sudoers)
 web2:
   host: 192.168.42.2
+elk-virtual-machine:
+  host: 10.76.242.20
+  user: saltuser
+  passwd: dilbert
+  sudo: True
+  tty: True
