@@ -11,3 +11,10 @@ elk-virtual-machine:
   passwd: dilbert
   sudo: True
   tty: True
+  minion_opts:
+    grains:
+      roles:
+        - programming-java-jdk8
+        - database-elasticsearch
+        - logstash-5x-general
+        - kibana-5x-general

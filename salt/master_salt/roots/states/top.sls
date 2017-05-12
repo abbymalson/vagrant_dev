@@ -41,10 +41,6 @@ base:
   'role:salt-master':
     - match: grain
     - continuous_integration.salt.master
-
-  'salt-master':
-    - match: grain
-    - salt
   'role:webserver-nginx':
     - match: grain
     - webserver.nginx
