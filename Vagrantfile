@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.box = "centos/7"
   config.vm.define "salt" do |master_box|
       #master_box.vm.synced_folder "C:/Users/abby/Documents/vagrant_static_assets", "/vagrant_data"
-      master_box.vm.synced_folder "salt/master_salt/", "/srv/salt/"
+      master_box.vm.synced_folder "salt/master_salt/", "/etc/salt/srv/salt/"
       master_box.vm.synced_folder "code/master/", "/code/"
       master_box.vm.network "private_network", ip: "192.168.33.10"
       master_box.vm.hostname = "salt-master"
