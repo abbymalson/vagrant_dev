@@ -1,0 +1,25 @@
+master: 192.168.33.45
+id: "dev_minion"
+file_client: remote
+
+
+file_roots:
+  base:
+    - /srv/salt/roots/states
+
+pillar_roots:
+  base:
+    - /srv/salt/roots/pillars
+
+grains:
+  roles:
+    - minion
+    - database-postgres
+    - programming-java-jdk8
+    - programming-java-tools-selenium
+    - programming-ruby-24
+    - programming-ruby-framework-rails
+    - programming-ruby-tools-cucumber
+
+
+# vi:syntax=yaml

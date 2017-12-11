@@ -9,7 +9,7 @@
 copy-jdk-to-server:
   file.managed:
     - name: /tmp/jdk.tar.gz
-    - source: salt://programming/java/jdk-8u121-linux-x64.tar.gz # 64 bit
+    - source: salt://programming/java/jdk-8u151-linux-x64.tar.gz # 64 bit
     - user: root
     - group: root
     - mode: 755
@@ -21,12 +21,12 @@ jdk-extract:
     - source: /tmp/jdk.tar.gz
     - user: vagrant
     - group: vagrant
-    - if_missing: /opt/jdk1.8.0_121/
+    - if_missing: /opt/jdk1.8.0_151/
 
 # Create symlink (so /opt/java)
 /opt/java:
   file.symlink:
-    - target: /opt/jdk1.8.0_121/
+    - target: /opt/jdk1.8.0_151/
     - force: True
 
 cleanup-tmp-jdk:

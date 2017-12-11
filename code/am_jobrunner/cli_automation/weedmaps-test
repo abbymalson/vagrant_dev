@@ -1,0 +1,11 @@
+#! /usr/bin/php
+<?php
+echo "hi there" . "\n";
+echo "Who Am I: "  . "\n";
+$output = shell_exec('cd');
+
+$output .= shell_exec('cd ~/code/weedmaps');
+$output .= shell_exec('git fetch; git pull;');
+$output .= shell_exec('git show-ref develop');
+echo "command output" . "\n";
+echo $output . "\n";

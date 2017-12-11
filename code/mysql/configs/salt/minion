@@ -15,13 +15,24 @@ grains:
   roles:
     - minion
     - database-mysql-57-server
-    - database-elasticsearch
-    - logstash-5x-general
-    - logstash-5x-mysql
-    - filebeat-5x
-    - metricbeat-5x
+    #- database-elasticsearch
+    #- logstash-5x-general
+    #- logstash-5x-mysql
+    #- filebeat-5x
+    #- metricbeat-5x
     - webserver-apache2
+    - programming-php5-cli
     - programming-php5-apache
     - programming-java-jdk8
+    #- tightvncserver
+    #- programming-java-tools-selenium
+    #- programming-combo-linux_php-tools-am-autorunner
+    #- programming-combo-ruby_mysql-releasenotes-reader
+    #- programming-combo-ruby_cucumber-wm_proj-github
+    #- programming-combo-bash_git-wm_proj-repository_update
+    #- programming-combo-linux_php-tools-wm_proj-code-github_search_for_unknown_jira_id
+    #- programming-combo-linux_php-wm_proj-circle-status-page
+    #- programming-combo-linux_php-wm_proj-wm_proj-releasestats-from-url
+    
 
 # vi:syntax=yaml
