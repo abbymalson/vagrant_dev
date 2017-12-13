@@ -2,10 +2,7 @@
 // /usr/bin/php /vagrant/code/am_jobrunner/cli_job_runner/cli_job_runner.php
 
 echo "hello from cli_job_runner \n";
-$server="localhost";
-$dbname="am_jobrunner";
-$user="root";
-$pass="easypeasy1";
+require_once "actions/database_settings.php";
 $IDLE_COUNTER = 50;
 $boredomCounter = 50;
 $display=1;
