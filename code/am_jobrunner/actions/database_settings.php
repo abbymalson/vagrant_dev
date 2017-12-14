@@ -4,5 +4,4 @@
 $server="localhost";
 $dbname="am_jobrunner";
 $user="root";
-$pass="easypeasy1";
-
+$pass="WM41Discovery";

@@ -60,7 +60,7 @@ try {
 	    		echo "\n";
 	    		echo "OUTPUT\n";
 	    		echo "=========================\n";
-	    		echo $output;
+	    		echo $output . "\n";
 	    		$boredomCounter = 0; // reset the boredom counter ...
     		//}
     		$boredomCounter++;

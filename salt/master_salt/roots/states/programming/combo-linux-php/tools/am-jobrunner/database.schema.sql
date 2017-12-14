@@ -58,7 +58,17 @@
 # /usr/bin/php /vagrant/code/am_jobrunner/cli_job_runner/cli_job_runner.php
 
 
+# drop database weedmaps_github_data
+create database weedmaps_github_data
+create table tbl_repository_show_ref (
+);
 
+create table tbl_repository (
+	repository_id int not null auto_increment,
+  repository_name varchar(255),
+	active ENUM('N', 'Y'),
+	primary key (repository_id)
+);
 
 drop database am_jobrunner;
 create database am_jobrunner;
@@ -141,9 +151,19 @@ CREATE TABLE cli_job_type
 	cli_job_type_id int not null auto_increment,
 	friendly_name varchar(255),
 	absolute_path_to_execute_job varchar(255),
+  cli_worker_name varchar(255) NOT NULL,
 	parameters varchar(255), # should be a json text type ...?
      PRIMARY KEY (cli_job_type_id) 
 );
+
+#CREATE TABLE `cli_job_type` (
+#  `cli_job_type_id` int(11) NOT NULL,
+#  `friendly_name` varchar(255) DEFAULT NULL,
+#  `absolute_path_to_execute_job` varchar(255) DEFAULT NULL,
+#  `cli_worker_name` varchar(255) NOT NULL,
+#  `parameters` varchar(255) DEFAULT NULL
+#) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 insert into cli_job_type
 	( friendly_name, absolute_path_to_execute_job, parameters)
