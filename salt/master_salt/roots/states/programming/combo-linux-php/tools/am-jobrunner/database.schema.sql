@@ -59,18 +59,31 @@
 
 
 # drop database weedmaps_github_data
-create database weedmaps_github_data
-create table tbl_repository_show_ref (
-);
+create database weedmaps_github_data;
 
 create table tbl_repository (
 	repository_id int not null auto_increment,
     repository_name varchar(255),
+    local_directory_path varchar(255),
+    github_path varchar(255),
+    github_clone_path varchar(255),
     circle_status_api_key varchar(255),
     circle_status_url varchar(255),
 	active ENUM('N', 'Y'),
 	primary key (repository_id)
 );
+insert into tbl_repository
+	( repository_name, local_directory_path, github_path, circle_status_api_key, circle_status_url, active)
+	values
+	('Weedmaps API', 
+		'/home/vagrant/code/weedmaps/api', 
+		'https://github.com/GhostGroup/weedmaps_api', 
+		'git@github.com:GhostGroup/weedmaps.git', 
+		'47cf58e2329fe70446897e379adb72c69d37b20c', 
+		'https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api', 
+		'Y');
+	
+
 # Create an API token to get project status/permissions
 # Core - d4f10ad8a520b1708cf04d29cfe02991e0113a49
 # https://circleci.com/gh/GhostGroup/weedmaps/tree/bug%2FCOR-1065.svg?style=svg&circle-token=d4f10ad8a520b1708cf04d29cfe02991e0113a49
@@ -79,15 +92,16 @@ create table tbl_repository (
 # https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api.svg?style=svg&circle-token=47cf58e2329fe70446897e379adb72c69d37b20c
 # https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api/tree/release%2F3.2.0.svg?style=svg&circle-token=47cf58e2329fe70446897e379adb72c69d37b20c
 # Moonshot - 26f8dda41c8af0147820f31a15b2bc8e44171ff8
-# https://circle.weedmaps.com/gh/GhostGroup/moonshot.svg?style=svg&circle-token=26f8dda41c8af0147820f31a15b2bc8e44171ff8
+# https://circle.weedmaps.com/gh/GhostGroup/moonshot.svg?style=svg&circle-token=26f8dda41c8af;
 
 create table tbl_sha_data (
 	sha_id int not null auto_increment,
 	repository_id int not null,
     sha_value varchar(255),
     branch_name varchar(255),
-    date_created varchar(255) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_updated varchar(255) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
 	primary key (sha_id)
 );
 
