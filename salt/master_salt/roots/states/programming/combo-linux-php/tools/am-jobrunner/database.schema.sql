@@ -65,12 +65,35 @@ create table tbl_repository_show_ref (
 
 create table tbl_repository (
 	repository_id int not null auto_increment,
-  repository_name varchar(255),
+    repository_name varchar(255),
+    circle_status_api_key varchar(255),
+    circle_status_url varchar(255),
 	active ENUM('N', 'Y'),
 	primary key (repository_id)
 );
+# Create an API token to get project status/permissions
+# Core - d4f10ad8a520b1708cf04d29cfe02991e0113a49
+# https://circleci.com/gh/GhostGroup/weedmaps/tree/bug%2FCOR-1065.svg?style=svg&circle-token=d4f10ad8a520b1708cf04d29cfe02991e0113a49
+# https://circleci.com/gh/GhostGroup/weedmaps.svg?style=svg&circle-token=d4f10ad8a520b1708cf04d29cfe02991e0113a49
+# API - 47cf58e2329fe70446897e379adb72c69d37b20c
+# https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api.svg?style=svg&circle-token=47cf58e2329fe70446897e379adb72c69d37b20c
+# https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api/tree/release%2F3.2.0.svg?style=svg&circle-token=47cf58e2329fe70446897e379adb72c69d37b20c
+# Moonshot - 26f8dda41c8af0147820f31a15b2bc8e44171ff8
+# https://circle.weedmaps.com/gh/GhostGroup/moonshot.svg?style=svg&circle-token=26f8dda41c8af0147820f31a15b2bc8e44171ff8
 
-drop database am_jobrunner;
+create table tbl_sha_data (
+	sha_id int not null auto_increment,
+	repository_id int not null,
+    sha_value varchar(255),
+    branch_name varchar(255),
+    date_created varchar(255) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated varchar(255) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	primary key (sha_id)
+);
+
+
+
+	drop database am_jobrunner;
 create database am_jobrunner;
 use am_jobrunner;
 CREATE TABLE users
