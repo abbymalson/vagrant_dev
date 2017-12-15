@@ -83,7 +83,6 @@ insert into tbl_repository
 		'https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api', 
 		'Y');
 	
-
 # Create an API token to get project status/permissions
 # Core - d4f10ad8a520b1708cf04d29cfe02991e0113a49
 # https://circleci.com/gh/GhostGroup/weedmaps/tree/bug%2FCOR-1065.svg?style=svg&circle-token=d4f10ad8a520b1708cf04d29cfe02991e0113a49
@@ -106,8 +105,54 @@ create table tbl_sha_data (
 );
 
 
+# drop database weedmaps_infrastructure;
+create database weedmaps_infrastructure;
 
-	drop database am_jobrunner;
+create table tbl_servers (
+	server_id int not null auto_increment,
+	server_type_id int not null,
+    private_ip_address varchar(255),
+    public_ip_address varchar(255),
+    private_dns_entry varchar(255),
+    public_dns_entry varchar(255),
+    server_instance_type varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (sha_id)
+);
+insert
+create table tbl_servers_types (
+	server_type_id int not null auto_increment,
+    server_type varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (server_type_id)
+);
+
+create table tbl_environment (
+	environment_id int not null auto_increment,
+    environment_name varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (environment_id)
+);
+insert into tbl_environment
+	set
+	environment_name = 'performance';
+insert into tbl_environment
+	set
+	environment_name = 'production';
+insert into tbl_environment
+	set
+	environment_name = 'staging';
+insert into tbl_environment
+	set
+	environment_name = 'acceptance';
+
+#	drop database am_jobrunner;
 create database am_jobrunner;
 use am_jobrunner;
 CREATE TABLE users
