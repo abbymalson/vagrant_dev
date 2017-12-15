@@ -1,30 +1,33 @@
 #! /usr/bin/php
 <?php
 
-$dbSettings = array();
+require_once "database_settings.php";
+require_once "class.database.php";
+echo "hostname: " . gethostname() . "\n";
 switch (gethostname()) {
   case "harry-potter":
-    $dbSettings['server'] = "localhost";
-    $dbSettings['dbname'] = "jobrunner";
-    $dbSettings['user'] = "root";
-    $dbSettings['pass'] = "WM41Discovery";
-  default:
-    $dbSettings['server'] = "localhost";
-    $dbSettings['dbname'] = "jobrunner";
-    $dbSettings['user'] = "root";
-    $dbSettings['pass'] = "easypeasy1";
+  $repo = array();
+  $repo['directory'] = "/home/weedmaps/code/weedmaps/api";
+  $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
+  $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
     break;
-}
-
-try {
-	$dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
-  // pull data from the database
-  // get the repo information
-  // get the sha information for the given repository
+  default:
   $repo = array();
   $repo['directory'] = "/home/vagrant/code/weedmaps/api";
   $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
   $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
+    break;
+}
+
+try {
+  print_r($dbSettings);
+	$dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
+  // pull data from the database
+  $repoInformation = getRepoInfoInDb($dbh);
+  // based on the parameters from the job, we'll know to pull the correct repo
+
+  // get the repo information
+  // get the sha information for the given repository
   // executeDockerCommand($dbh, 0);
 
   $gitRepoBranchInformation = updateRepoInFileSystem($repo);
@@ -40,6 +43,43 @@ try {
   die();
 }
 
+function getRepoInfoInDb($databaseHandler) {
+try {
+
+} catch (PDOException $e) {
+  print "Error!: " . $e->getMessage() . "<br/>";
+	$sth = null;
+	$dbh = null;
+  die();
+}
+
+
+}
+
+function executeSql($dbh, $sql, $parameters) {
+  try {
+    $sth = $dbh->prepare($sql);
+
+    $sth = buildParametersForSql($sth, $parameters);
+
+  } catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    $sth = null;
+    $dbh = null;
+    die();
+  }
+}
+
+function buildParametersForSql($sth, $jsonParemters) {
+
+  return $sth;
+
+}
+
+function getBranchDataFromDatabase($databaseHandler) {
+
+
+}
 
 function updateRepoInFileSystem($repo) {
   echo "changing into {$repo['directory']} directory ...  \n";
