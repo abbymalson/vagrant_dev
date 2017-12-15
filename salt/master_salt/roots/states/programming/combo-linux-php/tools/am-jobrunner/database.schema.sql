@@ -78,9 +78,14 @@ CREATE TABLE tbl_jr_users
 	primary key (user_id)
 );
 insert into tbl_jr_users
-	(first_name, last_name, email, password, role_id, active)
-	values
-	('Abby', 'Malson', 'amalson@weedmaps.com', 'password', 1, 'Y');
+	set
+	first_name = 'Abby',
+	last_name = 'Malson',
+	email = 'amalson@weedmaps.com',
+	password = 'password',
+	role_id = 1,
+	active = 'Y';
+
 CREATE TABLE tbl_jr_role
 (
 	role_id int not null auto_increment,
@@ -89,21 +94,21 @@ CREATE TABLE tbl_jr_role
 	primary key (role_id)
 );
 insert into tbl_jr_role
-	( role_name, active)
-	values
-	('admin', 'Y');
+	set
+	role_name = 'admin',
+	active = 'Y';
 insert into tbl_jr_role
-	( role_name, active)
-	values
-	('QA', 'Y');
+	set
+	role_name = 'Developer',
+	active = 'Y';
 insert into tbl_jr_role
-	( role_name, active)
-	values
-	('Developer', 'Y');
+	set
+	role_name = 'QA',
+	active = 'Y';
 insert into tbl_jr_role
-	( role_name, active)
-	values
-	('Tech Writer', 'Y');
+	set
+	role_name = 'Tech Writer',
+	active = 'Y';
 
 # drop table job_group;
 CREATE TABLE tbl_jr_job_group
@@ -137,13 +142,19 @@ CREATE TABLE tbl_jr_cli_jobs
 );
 
 insert into tbl_jr_cli_jobs
-	( job_group_id, friendly_name, user_id, cli_job_type_id, params)
-	values
-	('1', 'admin-test1-cli_job', 1, 1, '');
+	set
+	job_group_id = 1,
+	friendly_name = 'admin-test1-cli_job',
+	user_id = 1,
+	cli_job_type_id = 1,
+	params = '';
 insert into tbl_jr_cli_jobs
-	( job_group_id, friendly_name, user_id, cli_job_type_id, params)
-	values
-	('2', 'Weedmaps API Update', 1, 1, '');
+	set
+	job_group_id = 2,
+	friendly_name = 'Weedmaps API Update',
+	user_id = 1,
+	cli_job_type_id = 1,
+	params = '';
 
 #CREATE TABLE cli_worker_status
 #(	
@@ -160,7 +171,7 @@ CREATE TABLE tbl_jr_cli_job_type
 	cli_job_type_id int not null auto_increment,
 	friendly_name varchar(255),
 	absolute_path_to_execute_job varchar(255),
-  cli_worker_name varchar(255) NOT NULL,
+  	cli_worker_name varchar(255) NOT NULL,
 	parameters varchar(255), # should be a json text type ...?
      PRIMARY KEY (cli_job_type_id) 
 );
@@ -175,13 +186,15 @@ CREATE TABLE tbl_jr_cli_job_type
 
 
 insert into tbl_jr_cli_job_type
-	( friendly_name, absolute_path_to_execute_job, parameters)
-	values
-	('admin-test1', '/home/vagrant/code/am_jobrunner/admin-test', '');
+	set
+	friendly_name = 'admin-test1',
+	absolute_path_to_execute_job = '/home/vagrant/code/am_jobrunner/admin-test',
+	parameters = '';
 insert into tbl_jr_cli_job_type
-	( friendly_name, absolute_path_to_execute_job, parameters)
-	values
-	('admin-test1', '/usr/bin/php /home/vagrant/code/am_jobrunner/admin-test', '');
+	set
+	friendly_name = 'admin-test2',
+	absolute_path_to_execute_job = '/usr/bin/php /home/vagrant/code/am_jobrunner/admin-test',
+	parameters = '';
 # ALTER TABLE `CLI_JOB_TYPE` ADD `friendly_name` VARCHAR(255) NOT NULL ;
 
 CREATE TABLE tbl_jr_web_job_type
@@ -355,15 +368,15 @@ create table tbl_ghd_repository (
 	primary key (repository_id)
 );
 insert into tbl_ghd_repository
-	( repository_name, local_directory_path, github_path, circle_status_api_key, circle_status_url, active)
-	values
-	('Weedmaps API', 
-		'/home/vagrant/code/weedmaps/api', 
-		'https://github.com/GhostGroup/weedmaps_api', 
-		'git@github.com:GhostGroup/weedmaps.git', 
-		'47cf58e2329fe70446897e379adb72c69d37b20c', 
-		'https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api', 
-		'Y');
+	set
+	repository_name = 'Weedmaps API',
+	local_directory_path = '/home/vagrant/code/weedmaps/api',
+	github_path = 'https://github.com/GhostGroup/weedmaps_api', 
+	github_clone_path = 'git@github.com:GhostGroup/weedmaps.git',
+	circle_status_api_key = '47cf58e2329fe70446897e379adb72c69d37b20c',
+	circle_status_url = 'https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api', 
+	active = 'Y';
+
 	
 # Create an API token to get project status/permissions
 # Core - d4f10ad8a520b1708cf04d29cfe02991e0113a49
