@@ -105,24 +105,91 @@ create table tbl_sha_data (
 );
 
 
-# drop database weedmaps_infrastructure;
+drop database weedmaps_infrastructure;
 create database weedmaps_infrastructure;
 
 create table tbl_servers (
 	server_id int not null auto_increment,
 	server_type_id int not null,
+	environment_id int not null,
+	instance_type_id int not null,
+	server_name varchar(255),
     private_ip_address varchar(255),
     public_ip_address varchar(255),
     private_dns_entry varchar(255),
     public_dns_entry varchar(255),
-    server_instance_type varchar(255),
     date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_removed datetime,
 	primary key (sha_id)
 );
-insert
-create table tbl_servers_types (
+insert into tbl_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data1',
+	private_ip_address = '10.0.247.26',
+	public_ip_address = '54.149.207.30';
+
+insert into tbl_servers
+	set
+	server_type_id = 2,
+	environment_id = 1,
+	instance_type_id = 2,
+	server_name = 'performance-elasticsearch-master2',
+	private_ip_address = '10.0.0.178',
+	public_ip_address = '54.186.55.229';
+insert into tbl_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data7',
+	private_ip_address = '10.0.0.161',
+	public_ip_address = '54.187.105.250';
+insert into tbl_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data2',
+	private_ip_address = '10.0.0.161',
+	public_ip_address = '54.187.105.250';
+
+insert into tbl_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data10',
+	private_ip_address = '10.0.0.138',
+	public_ip_address = '54.200.216.200';
+
+
+insert into tbl_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data11',
+	private_ip_address = '10.0.1.105',
+	public_ip_address = '54.190.197.237';
+
+create table tbl_instance_type (
+	instance_type_id int not null auto_increment,
+    instance_type varchar(255),
+	primary key (instance_type_id)
+);
+
+insert into tbl_instance_type 
+	set
+	instance_type = 'c4.8xlarge';
+insert into tbl_instance_type 
+	set
+	instance_type = 'c4.large';
+
+create table tbl_server_type (
 	server_type_id int not null auto_increment,
     server_type varchar(255),
     date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -130,7 +197,12 @@ create table tbl_servers_types (
     date_removed datetime,
 	primary key (server_type_id)
 );
-
+insert into tbl_server_type 
+	set
+	server_type = 'Elasticsearch Data node';
+insert into tbl_server_type 
+	set
+	server_type = 'Elasticsearch Master node';
 create table tbl_environment (
 	environment_id int not null auto_increment,
     environment_name varchar(255),
@@ -151,6 +223,9 @@ insert into tbl_environment
 insert into tbl_environment
 	set
 	environment_name = 'acceptance';
+insert into tbl_environment
+	set
+	environment_name = 'develop';
 
 #	drop database am_jobrunner;
 create database am_jobrunner;
