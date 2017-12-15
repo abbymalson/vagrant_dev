@@ -3,7 +3,6 @@
 $dbSettings = array();
 $dbSettings['server'] = "localhost";
 $dbSettings['dbname'] = "am_jobrunner";
-$dbSettings['dbname2'] = "weedmaps_infrastructure";
 $dbSettings['user'] = "root";
 $dbSettings['pass'] = "WM41Discovery";
 $environment = "performance";
@@ -12,10 +11,9 @@ $count = 0;
 
 try {
 	$dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
-	$localInfraDb = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname2']}", $dbSettings['user'], $dbSettings['pass']);
   echo "executing Docker command ...  \n";
 
-  $ipAddress = findIPAddressOfDatanode($environment, $localInfraDb, $count);;
+  $ipAddress = findIPAddressOfDatanode($environment, $databaseHandler, $count);;
   executeDockerCommand($dbh, $ipAddress, $count);
 
 
@@ -26,7 +24,7 @@ try {
   die();
 }
 
-function findIPAddressOfDatanode($environment, $infrastructureDbHandler, $count) {
+function findIPAddressOfDatanode($environment, $databaseHandler, $count) {
   $ipAddress = "54.190.197.237";
   try {
     $sql = '
@@ -86,7 +84,7 @@ function insertJobForAdminWorker($dbh, $reason) {
   $jobGroupId = 2;
   $userId = 1;
   $cliJobTypeId = 3;
-	$friendlyName = "Weedmaps API update performance - reattempt - " . $reason;
+  $friendlyName = "Weedmaps API update performance - reattempt - " . $reason;
   $params = "";
   $sql = "
   insert into cli_jobs
