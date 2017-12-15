@@ -57,11 +57,293 @@
 
 # /usr/bin/php /vagrant/code/am_jobrunner/cli_job_runner/cli_job_runner.php
 
+drop database jobrunner;
+create database jobrunner;
+use jobrunner;
 
-# drop database weedmaps_github_data
-create database weedmaps_github_data;
+-- ======================================================================
+-- jr - Job Runner
+-- ======================================================================
 
-create table tbl_repository (
+
+CREATE TABLE tbl_jr_users
+(
+	user_id int not null auto_increment,
+	first_name varchar(255),
+	last_name varchar(255),
+	email varchar(255),
+	password varchar(255),
+	role_id int,
+	active ENUM('N', 'Y'),
+	primary key (user_id)
+);
+insert into tbl_jr_users
+	(first_name, last_name, email, password, role_id, active)
+	values
+	('Abby', 'Malson', 'amalson@weedmaps.com', 'password', 1, 'Y');
+CREATE TABLE tbl_jr_role
+(
+	role_id int not null auto_increment,
+	role_name varchar(255),
+	active ENUM('N', 'Y'),
+	primary key (role_id)
+);
+insert into tbl_jr_role
+	( role_name, active)
+	values
+	('admin', 'Y');
+insert into tbl_jr_role
+	( role_name, active)
+	values
+	('QA', 'Y');
+insert into tbl_jr_role
+	( role_name, active)
+	values
+	('Developer', 'Y');
+insert into tbl_jr_role
+	( role_name, active)
+	values
+	('Tech Writer', 'Y');
+
+# drop table job_group;
+CREATE TABLE tbl_jr_job_group
+(
+	job_group_id int not null auto_increment,
+	friendly_name varchar(255) not null ,
+	user_id int not null,
+	date_job_submitted  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	date_job_completed datetime,
+    primary key (job_group_id)
+);
+# ALTER TABLE `job_group` CHANGE `date_job_submitted` `date_job_submitted` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+insert into tbl_jr_job_group
+	( friendly_name, user_id)
+	values
+	('admin-test', 1);
+
+CREATE TABLE tbl_jr_cli_jobs
+(
+	cli_jobs_id int not null auto_increment,
+	job_group_id int not null,
+	friendly_name varchar(255) not null ,
+	user_id int not null,
+	cli_job_type_id int not null,
+	params text,
+	date_job_submitted datetime  NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	date_job_completed datetime,
+	result_parsed varchar(255),
+	results_full text,
+    primary key (cli_jobs_id)
+);
+
+insert into tbl_jr_cli_jobs
+	( job_group_id, friendly_name, user_id, cli_job_type_id, params)
+	values
+	('1', 'admin-test1-cli_job', 1, 1, '');
+insert into tbl_jr_cli_jobs
+	( job_group_id, friendly_name, user_id, cli_job_type_id, params)
+	values
+	('2', 'Weedmaps API Update', 1, 1, '');
+
+#CREATE TABLE cli_worker_status
+#(	
+#	cli_worker_status_id int not null auto_increment,
+#	cli_job_type_id INT not null,
+#	cli_jobs_id INT not null,
+#	result_parsed varchar(255),
+#	results_full text,
+#    primary key(cli_worker_status_id)
+#);
+
+CREATE TABLE tbl_jr_cli_job_type
+(
+	cli_job_type_id int not null auto_increment,
+	friendly_name varchar(255),
+	absolute_path_to_execute_job varchar(255),
+  cli_worker_name varchar(255) NOT NULL,
+	parameters varchar(255), # should be a json text type ...?
+     PRIMARY KEY (cli_job_type_id) 
+);
+
+#CREATE TABLE `cli_job_type` (
+#  `cli_job_type_id` int(11) NOT NULL,
+#  `friendly_name` varchar(255) DEFAULT NULL,
+#  `absolute_path_to_execute_job` varchar(255) DEFAULT NULL,
+#  `cli_worker_name` varchar(255) NOT NULL,
+#  `parameters` varchar(255) DEFAULT NULL
+#) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+insert into tbl_jr_cli_job_type
+	( friendly_name, absolute_path_to_execute_job, parameters)
+	values
+	('admin-test1', '/home/vagrant/code/am_jobrunner/admin-test', '');
+insert into tbl_jr_cli_job_type
+	( friendly_name, absolute_path_to_execute_job, parameters)
+	values
+	('admin-test1', '/usr/bin/php /home/vagrant/code/am_jobrunner/admin-test', '');
+# ALTER TABLE `CLI_JOB_TYPE` ADD `friendly_name` VARCHAR(255) NOT NULL ;
+
+CREATE TABLE tbl_jr_web_job_type
+(
+	web_job_type_id int not null auto_increment,
+	friendly_name varchar(255),
+	absolute_path_to_execute_job varchar(255), # This will kick off a cli job/selenium job
+	parameters varchar(255), # should be a json text type ...?
+     PRIMARY KEY (web_job_type_id) 
+     # How do you comment to the table so it's on the table?
+     # These are Selenium Workers
+);
+
+CREATE TABLE tbl_jr_web_workers
+(
+	web_worker_id int not null auto_increment,
+	friendly_name varchar(255),
+	display INT,
+	active ENUM('N', 'Y'),
+     PRIMARY KEY (web_worker_id)
+);
+
+CREATE TABLE tbl_jr_cli_workers
+(
+	cli_worker_id int not null auto_increment,
+	friendly_name varchar(255),
+	screen INT,
+	active ENUM('N', 'Y'),
+     PRIMARY KEY (cli_worker_id)
+);
+
+
+-- ======================================================================
+-- wi - Weedmaps Infrastructure
+-- ======================================================================
+
+create table tbl_wi_servers (
+	server_id int not null auto_increment,
+	server_type_id int not null,
+	environment_id int not null,
+	instance_type_id int not null,
+	server_name varchar(255),
+    private_ip_address varchar(255),
+    public_ip_address varchar(255),
+    private_dns_entry varchar(255),
+    public_dns_entry varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (sha_id)
+);
+insert into tbl_wi_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data1',
+	private_ip_address = '10.0.247.26',
+	public_ip_address = '54.149.207.30';
+
+insert into tbl_wi_servers
+	set
+	server_type_id = 2,
+	environment_id = 1,
+	instance_type_id = 2,
+	server_name = 'performance-elasticsearch-master2',
+	private_ip_address = '10.0.0.178',
+	public_ip_address = '54.186.55.229';
+insert into tbl_wi_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data7',
+	private_ip_address = '10.0.0.161',
+	public_ip_address = '54.187.105.250';
+insert into tbl_wi_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data2',
+	private_ip_address = '10.0.0.161',
+	public_ip_address = '54.187.105.250';
+
+insert into tbl_wi_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data10',
+	private_ip_address = '10.0.0.138',
+	public_ip_address = '54.200.216.200';
+
+
+insert into tbl_wi_servers
+	set
+	server_type_id = 1,
+	environment_id = 1,
+	instance_type_id = 1,
+	server_name = 'performance-elasticsearch-data11',
+	private_ip_address = '10.0.1.105',
+	public_ip_address = '54.190.197.237';
+
+create table tbl_wi_instance_type (
+	instance_type_id int not null auto_increment,
+    instance_type varchar(255),
+	primary key (instance_type_id)
+);
+
+insert into tbl_wi_instance_type 
+	set
+	instance_type = 'c4.8xlarge';
+insert into tbl_wi_instance_type 
+	set
+	instance_type = 'c4.large';
+
+create table tbl_wi_servers_types (
+	server_type_id int not null auto_increment,
+    server_type varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (server_type_id)
+);
+insert into tbl_wi_servers_types 
+	set
+	server_type = 'Elasticsearch Data node';
+insert into tbl_wi_servers_types 
+	set
+	server_type = 'Elasticsearch Master node';
+
+create table tbl_wi_environment (
+	environment_id int not null auto_increment,
+    environment_name varchar(255),
+    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_removed datetime,
+	primary key (environment_id)
+);
+
+insert into tbl_wi_environment
+	set
+	environment_name = 'performance';
+insert into tbl_wi_environment
+	set
+	environment_name = 'production';
+insert into tbl_wi_environment
+	set
+	environment_name = 'staging';
+insert into tbl_wi_environment
+	set
+	environment_name = 'acceptance';
+insert into tbl_wi_environment
+	set
+	environment_name = 'develop';
+
+-- ======================================================================
+-- ghd - Github Data
+-- ======================================================================
+
+create table tbl_ghd_repository (
 	repository_id int not null auto_increment,
     repository_name varchar(255),
     local_directory_path varchar(255),
@@ -72,7 +354,7 @@ create table tbl_repository (
 	active ENUM('N', 'Y'),
 	primary key (repository_id)
 );
-insert into tbl_repository
+insert into tbl_ghd_repository
 	( repository_name, local_directory_path, github_path, circle_status_api_key, circle_status_url, active)
 	values
 	('Weedmaps API', 
@@ -93,7 +375,7 @@ insert into tbl_repository
 # Moonshot - 26f8dda41c8af0147820f31a15b2bc8e44171ff8
 # https://circle.weedmaps.com/gh/GhostGroup/moonshot.svg?style=svg&circle-token=26f8dda41c8af;
 
-create table tbl_sha_data (
+create table tbl_ghd_sha_data (
 	sha_id int not null auto_increment,
 	repository_id int not null,
     sha_value varchar(255),
@@ -102,267 +384,4 @@ create table tbl_sha_data (
     date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_removed datetime,
 	primary key (sha_id)
-);
-
-
-drop database weedmaps_infrastructure;
-create database weedmaps_infrastructure;
-
-create table tbl_servers (
-	server_id int not null auto_increment,
-	server_type_id int not null,
-	environment_id int not null,
-	instance_type_id int not null,
-	server_name varchar(255),
-    private_ip_address varchar(255),
-    public_ip_address varchar(255),
-    private_dns_entry varchar(255),
-    public_dns_entry varchar(255),
-    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_removed datetime,
-	primary key (sha_id)
-);
-insert into tbl_servers
-	set
-	server_type_id = 1,
-	environment_id = 1,
-	instance_type_id = 1,
-	server_name = 'performance-elasticsearch-data1',
-	private_ip_address = '10.0.247.26',
-	public_ip_address = '54.149.207.30';
-
-insert into tbl_servers
-	set
-	server_type_id = 2,
-	environment_id = 1,
-	instance_type_id = 2,
-	server_name = 'performance-elasticsearch-master2',
-	private_ip_address = '10.0.0.178',
-	public_ip_address = '54.186.55.229';
-insert into tbl_servers
-	set
-	server_type_id = 1,
-	environment_id = 1,
-	instance_type_id = 1,
-	server_name = 'performance-elasticsearch-data7',
-	private_ip_address = '10.0.0.161',
-	public_ip_address = '54.187.105.250';
-insert into tbl_servers
-	set
-	server_type_id = 1,
-	environment_id = 1,
-	instance_type_id = 1,
-	server_name = 'performance-elasticsearch-data2',
-	private_ip_address = '10.0.0.161',
-	public_ip_address = '54.187.105.250';
-
-insert into tbl_servers
-	set
-	server_type_id = 1,
-	environment_id = 1,
-	instance_type_id = 1,
-	server_name = 'performance-elasticsearch-data10',
-	private_ip_address = '10.0.0.138',
-	public_ip_address = '54.200.216.200';
-
-
-insert into tbl_servers
-	set
-	server_type_id = 1,
-	environment_id = 1,
-	instance_type_id = 1,
-	server_name = 'performance-elasticsearch-data11',
-	private_ip_address = '10.0.1.105',
-	public_ip_address = '54.190.197.237';
-
-create table tbl_instance_type (
-	instance_type_id int not null auto_increment,
-    instance_type varchar(255),
-	primary key (instance_type_id)
-);
-
-insert into tbl_instance_type 
-	set
-	instance_type = 'c4.8xlarge';
-insert into tbl_instance_type 
-	set
-	instance_type = 'c4.large';
-
-create table tbl_server_type (
-	server_type_id int not null auto_increment,
-    server_type varchar(255),
-    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_removed datetime,
-	primary key (server_type_id)
-);
-insert into tbl_server_type 
-	set
-	server_type = 'Elasticsearch Data node';
-insert into tbl_server_type 
-	set
-	server_type = 'Elasticsearch Master node';
-create table tbl_environment (
-	environment_id int not null auto_increment,
-    environment_name varchar(255),
-    date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_removed datetime,
-	primary key (environment_id)
-);
-insert into tbl_environment
-	set
-	environment_name = 'performance';
-insert into tbl_environment
-	set
-	environment_name = 'production';
-insert into tbl_environment
-	set
-	environment_name = 'staging';
-insert into tbl_environment
-	set
-	environment_name = 'acceptance';
-insert into tbl_environment
-	set
-	environment_name = 'develop';
-
-#	drop database am_jobrunner;
-create database am_jobrunner;
-use am_jobrunner;
-CREATE TABLE users
-(
-	user_id int not null auto_increment,
-	first_name varchar(255),
-	last_name varchar(255),
-	email varchar(255),
-	password varchar(255),
-	role_id int,
-	active ENUM('N', 'Y'),
-	primary key (user_id)
-);
-insert into users
-	(first_name, last_name, email, password, role_id, active)
-	values
-	('Abby', 'Malson', 'amalson@weedmaps.com', 'password', 1, 'Y');
-CREATE TABLE role
-(
-	role_id int not null auto_increment,
-	role_name varchar(255),
-	active ENUM('N', 'Y'),
-	primary key (role_id)
-);
-insert into role
-	( role_name, active)
-	values
-	('admin', 'Y');
-
-# drop table job_group;
-CREATE TABLE job_group
-(
-	job_group_id int not null auto_increment,
-	friendly_name varchar(255) not null ,
-	user_id int not null,
-	date_job_submitted  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-	date_job_completed datetime,
-    primary key (job_group_id)
-);
-# ALTER TABLE `job_group` CHANGE `date_job_submitted` `date_job_submitted` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
-insert into job_group
-	( friendly_name, user_id)
-	values
-	('admin-test', 1);
-
-CREATE TABLE cli_jobs
-(
-	cli_jobs_id int not null auto_increment,
-	job_group_id int not null,
-	friendly_name varchar(255) not null ,
-	user_id int not null,
-	cli_job_type_id int not null,
-	params text,
-	date_job_submitted datetime  NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-	date_job_completed datetime,
-	result_parsed varchar(255),
-	results_full text,
-    primary key (cli_jobs_id)
-);
-
-insert into cli_jobs
-	( job_group_id, friendly_name, user_id, cli_job_type_id, params)
-	values
-	('1', 'admin-test1-cli_job', 1, 1, '');
-
-#CREATE TABLE cli_worker_status
-#(	
-#	cli_worker_status_id int not null auto_increment,
-#	cli_job_type_id INT not null,
-#	cli_jobs_id INT not null,
-#	result_parsed varchar(255),
-#	results_full text,
-#    primary key(cli_worker_status_id)
-#);
-
-CREATE TABLE cli_job_type
-(
-	cli_job_type_id int not null auto_increment,
-	friendly_name varchar(255),
-	absolute_path_to_execute_job varchar(255),
-  cli_worker_name varchar(255) NOT NULL,
-	parameters varchar(255), # should be a json text type ...?
-     PRIMARY KEY (cli_job_type_id) 
-);
-
-#CREATE TABLE `cli_job_type` (
-#  `cli_job_type_id` int(11) NOT NULL,
-#  `friendly_name` varchar(255) DEFAULT NULL,
-#  `absolute_path_to_execute_job` varchar(255) DEFAULT NULL,
-#  `cli_worker_name` varchar(255) NOT NULL,
-#  `parameters` varchar(255) DEFAULT NULL
-#) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-insert into cli_job_type
-	( friendly_name, absolute_path_to_execute_job, parameters)
-	values
-	('admin-test1', '/home/vagrant/code/am_jobrunner/admin-test', '');
-# ALTER TABLE `CLI_JOB_TYPE` ADD `friendly_name` VARCHAR(255) NOT NULL ;
-
-CREATE TABLE web_job_type
-(
-	web_job_type_id int not null auto_increment,
-	friendly_name varchar(255),
-	absolute_path_to_execute_job varchar(255), # This will kick off a cli job/selenium job
-	parameters varchar(255), # should be a json text type ...?
-     PRIMARY KEY (web_job_type_id) 
-     # How do you comment to the table so it's on the table?
-     # These are Selenium Workers
-);
-
-CREATE TABLE web_workers
-(
-	web_worker_id int not null auto_increment,
-	friendly_name varchar(255),
-	display INT,
-	active ENUM('N', 'Y'),
-     PRIMARY KEY (web_worker_id)
-);
-
-CREATE TABLE cli_workers
-(
-	cli_worker_id int not null auto_increment,
-	friendly_name varchar(255),
-	screen INT,
-	active ENUM('N', 'Y'),
-     PRIMARY KEY (cli_worker_id)
-);
-
-CREATE TABLE web_workers
-(
-	web_worker_status_id INT not null auto_increment,
-	web_job_type_id INT not null,
-	result_parsed varchar(255),
-	results_full text,
-	status ENUM('WAITING', 'RUNNING', 'FINISHED'),
-     PRIMARY KEY (web_worker_status_id)
 );
