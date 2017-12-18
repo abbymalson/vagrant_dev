@@ -244,7 +244,7 @@ create table tbl_wi_servers (
     date_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_removed datetime,
-	primary key (sha_id)
+	primary key (server_id)
 );
 insert into tbl_wi_servers
 	set
