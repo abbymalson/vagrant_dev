@@ -122,9 +122,9 @@ CREATE TABLE tbl_jr_job_group
 );
 # ALTER TABLE `job_group` CHANGE `date_job_submitted` `date_job_submitted` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 insert into tbl_jr_job_group
-	( friendly_name, user_id)
-	values
-	('admin-test', 1);
+	set
+	friendly_name = 'admin-test',
+	user_id = 1;
 
 CREATE TABLE tbl_jr_cli_jobs
 (
@@ -189,11 +189,13 @@ insert into tbl_jr_cli_job_type
 	set
 	friendly_name = 'admin-test1',
 	absolute_path_to_execute_job = '/home/vagrant/code/am_jobrunner/admin-test',
+    cli_worker_name = 'normal-permissions',
 	parameters = '';
 insert into tbl_jr_cli_job_type
 	set
 	friendly_name = 'admin-test2',
 	absolute_path_to_execute_job = '/usr/bin/php /home/vagrant/code/am_jobrunner/admin-test',
+    cli_worker_name = 'normal-permissions',
 	parameters = '';
 # ALTER TABLE `CLI_JOB_TYPE` ADD `friendly_name` VARCHAR(255) NOT NULL ;
 
@@ -220,6 +222,7 @@ CREATE TABLE tbl_jr_web_workers
 CREATE TABLE tbl_jr_cli_workers
 (
 	cli_worker_id int not null auto_increment,
+    cli_worker_name varchar(255), 
 	friendly_name varchar(255),
 	screen INT,
 	active ENUM('N', 'Y'),
