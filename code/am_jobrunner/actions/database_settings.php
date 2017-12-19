@@ -2,24 +2,29 @@
 // /usr/bin/php /vagrant/code/am_jobrunner/cli_job_runner/cli_job_runner.php
 
     $dbSettings = array();
-switch (gethostname()) {
-  case "harry-potter":
+//switch (gethostname()) {
+  //case "harry-potter":
+if (gethostname() == 'harry-potter') {
     $server="localhost";
-    $dbname="am_jobrunner";
+    $dbname="jobrunner";
     $user="root";
     $pass="WM41Discovery";
     $dbSettings['server'] = $server;
     $dbSettings['dbname'] = $dbname;
     $dbSettings['user'] = $user;
     $dbSettings['pass'] = $pass;
-  default:
+} else {
+  //default:
     $server="localhost";
-    $dbname="am_jobrunner";
+    $dbname="jobrunner";
     $user="root";
     $pass="easypeasy1";
     $dbSettings['server'] = $server;
     $dbSettings['dbname'] = $dbname;
     $dbSettings['user'] = $user;
     $dbSettings['pass'] = $pass;
-    break;
 }
+ //   break;
+//}
+// print_r($dbSettings);
+// echo gethostname() . "\n";
