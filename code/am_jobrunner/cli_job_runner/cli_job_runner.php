@@ -29,7 +29,7 @@ try {
     // No? be sad and show fortunes every 60 loops
     // limit 1
     $sql = getJobsToDoForCliWorkersSql();
-    // echo "SQL: " . $sql . "\n";
+    echo "SQL: " . $sql . "\n";
 //    $sth = $dbh->query($sql);
     //$res = $sth->execute();
     $result = $dbh->query($sql);
@@ -87,11 +87,11 @@ function getJobsToDoForCliWorkersSql() {
   cj.cli_job_type_id,
   params,
   date_job_submitted  
-  from cli_jobs cj
-  join cli_job_type cjt on cj.cli_job_type_id = cjt.cli_job_type_id
-  where date_job_completed is null
+  FROM tbl_jr_cli_jobs cj
+  JOIN tbl_jr_cli_job_type cjt ON cj.cli_job_type_id = cjt.cli_job_type_id
+  WHERE date_job_completed IS null
   AND cjt.cli_worker_name = '{$cliWorkerName}'
-  order by date_job_submitted desc
+  ORDER BY date_job_submitted desc
   limit 1";
   // job_id,
   //$sth = $databaseHandler->query($sql);
@@ -121,7 +121,7 @@ function addingJobWorker($databaseHandler) {
   // $sql = "select cli_worker_id from cli_workers where cli_worker_name = '{$cliWorkerName}'";
   // if there is a cli_worker_id then update the value to 'Y'
   
-  $sql = "INSERT INTO cli_workers
+  $sql = "INSERT INTO tbl_jr_cli_workers
     SET
       friendly_name = '{$friendlyName}',
       cli_worker_name = '{$cliWorkerName}',
@@ -147,7 +147,12 @@ function markJobComplete($databaseHandler, $job_id, $output) {
        PRIMARY KEY (cli_worker_id)
   );
   */
-  $sql = "update cli_jobs set date_job_completed = CURRENT_TIMESTAMP, results_full = '$output' where cli_jobs_id = $job_id";
+  $sql = "UPDATE tbl_jr_cli_jobs 
+      SET 
+        date_job_completed = CURRENT_TIMESTAMP, 
+        results_full = '{$output}' 
+      WHERE 
+        cli_jobs_id = $job_id";
   //$friendlyName = "command line testing";
   //$sql = "insert into cli_workers (friendly_name, screen, active) values ('$friendlyName', -1, 'Y')";
     /* Delete all rows from the FRUIT table */
