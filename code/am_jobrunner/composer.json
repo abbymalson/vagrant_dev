@@ -1,0 +1,12 @@
+{
+  "name": "harry-potter",
+  "license": "MIT",
+  "require": {
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+    }
+  }
+}
