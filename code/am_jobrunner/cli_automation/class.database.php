@@ -1,27 +1,32 @@
 <?php
 
 class DatabaseObj {
-  private var $_dbh;
-  private var $_sth;
-  public function __construct($host, $db, $user, $pass);
-  public function executeSql($sql, $parameterArray);
-  private function _buildParameters($parameterArray);
+  private $_dbh;
+  private $_sth;
+  public function __construct($host, $db, $user, $pass) {
+  }
+  public function executeSql($sql, $parameterArray) {
+  }
+  private function _buildParameters($parameterArray) {
+  }
 }
 
 class MysqlObj extends DatabaseObj {
-  private var $_dbh;
-  private var $_sth;
+  private $_dbh;
+  private $_sth;
   public function __contruct($host, $db, $user, $pass) {
-    try {
       $this->_dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
+      /*
+    try {
     } catch (PDOException $e) {
       print "Error!: " . $e->getMessage() . "<br/>";
       $this->sth = null;
       $this->dbh = null;
       die();
     }
+       */
   }
-  public function executeSql($sql, $parameterArray) {
+  public function executeSql($sql, $parametersArray) {
     /*
     $sql = "
     insert into cli_jobs
@@ -34,6 +39,9 @@ class MysqlObj extends DatabaseObj {
       ";
      */
 
+      // FIXME: DEBUG
+      print_r($parametersArray);
+
         $this->_sth = $this->_dbh->prepare($sql);
         $this->_buildParameters($parametersArray);
         
@@ -43,10 +51,21 @@ class MysqlObj extends DatabaseObj {
     return $this->_dbh->exec($sql);
   }
   private function _buildParameters($parametersArray) {
-        $this->sth->bindParam(':job_group_id', $jobGroupId, PDO::PARAM_INT);
-        $this->sth->bindParam(':friendly_name', $friendlyName, PDO::PARAM_STR);
-        $this->sth->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $this->sth->bindParam(':cli_job_type_id', $cliJobTypeId, PDO::PARAM_INT);
-        $this->sth->bindParam(':params', $params, PDO::PARAM_STR);
+    foreach($parametersArray as $param) {
+      $paramName = $param->getName();
+      $paramValue = $param->getValue();
+      switch($param->getParamType()) {
+      case "integer":
+        echo ":{$paramName}: {$paramValue} -> PDO::PARAM_INT";
+        $this->sth->bindParam(":{$paramName}", $paramValue, PDO::PARAM_INT);
+        break;
+      case "string":
+        echo ":{$paramName}: {$paramValue} -> PDO::PARAM_STR";
+        $this->sth->bindParam(":{$paramName}", $paramValue, PDO::PARAM_STR);
+        break;
+      default:
+        echo "No Type match found";
+      }
+    }
   }
 }

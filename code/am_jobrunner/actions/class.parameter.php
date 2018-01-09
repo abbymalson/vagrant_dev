@@ -1,9 +1,9 @@
 <?php
 
 class Parameter {
-  private var $_type;
-  private var $_name;
-  private var $_value;
+  private $_type;
+  private $_name;
+  private $_value;
 
 
   public function __contruct($type, $name, $value) {
@@ -23,7 +23,8 @@ class Parameter {
   public function getName() {
     return $this->_name;
   }
-  public function getParameterType() {
+  public function getParamType() {
     return $this->_type;
   }
 }
+

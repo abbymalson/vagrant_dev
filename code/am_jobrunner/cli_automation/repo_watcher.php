@@ -3,6 +3,7 @@
 
 require_once "database_settings.php";
 require_once "class.database.php";
+require_once "class.parameter.php";
 echo "hostname: " . gethostname() . "\n";
 switch (gethostname()) {
   case "harry-potter":
@@ -22,6 +23,8 @@ switch (gethostname()) {
 try {
   print_r($dbSettings);
 	$dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
+
+  $dbhMySql = new MysqlObj($dbSettings['server'], $dbSettings['dbname'], $dbSettings['user'], $dbSettings['pass']);
   // pull data from the database
   $repoInformation = getRepoInfoInDb($dbh);
   // based on the parameters from the job, we'll know to pull the correct repo
@@ -30,7 +33,7 @@ try {
   // get the sha information for the given repository
   // executeDockerCommand($dbh, 0);
 
-  $gitRepoBranchInformation = updateRepoInFileSystem($repo);
+  $gitRepoBranchInformation = updateRepoInFileSystem($dbhMySql, $repo);
     // check for branch in array in database
     //if found, check branch SHA
     // if different, update branch sha info, update date, flag branch as updated
@@ -44,18 +47,58 @@ try {
 }
 
 function getRepoInfoInDb($databaseHandler) {
-try {
+  try {
+    // get information from the database
+    // SQL:
+    // SELECT
+    //   repo.repository_id,
+    //   repo.repository_name,
+    //   repo.local_directory_path,
+    //   repo.github_path,
+    //   repo.github_clone_path,
+    //   repo.circle_status_api_key,
+    //   repo.circle_status_url
+    // FROM
+    //   tbl_ghd_repository repo
+    // WHERE
+    //   repo.active = 'Y'
+    $sql = "
+      SELECT 
+        repo.repository_id,
+        repo.repository_name,
+        repo.local_directory_path,
+        repo.github_path,
+        repo.github_clone_path,
+        repo.circle_status_api_key,
+        repo.circle_status_url
+      FROM
+        tbl_ghd_repository repo
+      WHERE
+        repo.active = 'Y'";
+    $result = $databaseHandler->query($sql);
+    if ($result) {
+      foreach ($result as $row) {
+        echo "repo: ";
+        print_r($row);
+//               echo "starting job: " . $row['friendly_name'] . " (" . $row['date_job_submitted'] . ")\n";
+  //            $output = shell_exec($row['absolute_path_to_execute_job']);
+   //       echo "\n";
+    //      echo "OUTPUT\n";
+    //      echo "=========================\n";
+    //      echo $output . "\n";
+        } 
+    }
 
-} catch (PDOException $e) {
-  print "Error!: " . $e->getMessage() . "<br/>";
-	$sth = null;
-	$dbh = null;
-  die();
+  } catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    $sth = null;
+    $databaseHandler= null;
+  }
+
+
 }
 
-
-}
-
+/*
 function executeSql($dbh, $sql, $parameters) {
   try {
     $sth = $dbh->prepare($sql);
@@ -75,13 +118,8 @@ function buildParametersForSql($sth, $jsonParemters) {
   return $sth;
 
 }
-
-function getBranchDataFromDatabase($databaseHandler) {
-
-
-}
-
-function updateRepoInFileSystem($repo) {
+ */
+function updateRepoInFileSystem($databaseHandler, $repo) {
   echo "changing into {$repo['directory']} directory ...  \n";
   chdir($repo['directory']);
   $output = "";
@@ -94,6 +132,10 @@ function updateRepoInFileSystem($repo) {
   echo $showRef;
     // loop over output
   $data = parseDataFromShowRef($showRef);
+  foreach ($data as $row) {
+    updateBranchInformationInDatabase($databaseHandler, $repo,  $row[0], $row[1]); // SHA, branch
+  }
+
   print_r($data);
 }
 
@@ -112,16 +154,28 @@ function parseDataFromShowRef($showRef) {
   return $data;
 }
 
-function getBranchDataFromDatabase($branch) {
 
-}
-
-
-function checkBranchAgainstKnownBranches($branch) {
-
-}
-
-function updateBranchInKnownBranches($branch) {
+function updateBranchInformationInDatabase($dbh, $repo, $sha, $branch) {
+  $sql = "INSERT INTO (
+      repository_id,
+      sha_value, 
+      branch_name
+    ) VALUES (
+      :repository_id,
+      :sha,
+      :branch
+    )
+      ON DUPLICATE KEY
+    UPDATE
+      sha_value = :sha
+    ";
+  $parameters = array();
+  // $parameters[] = new Parameter(type, name, value);
+  $parameters[] = new Parameter("integer", "repository_id", $repo['repository_id']);
+  $parameters[] = new Parameter("string", "sha", $sha);
+  $parameters[] = new Parameter("string", "branch", $branch);
+  // echo $sql;
+  $dbh->executeSql($dbh, $sql, $parameters) ;
 }
 
 function buildStatusPageImagesUrls($repo, $branchUrlFriendlyName) {

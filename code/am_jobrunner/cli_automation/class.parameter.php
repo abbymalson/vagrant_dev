@@ -27,4 +27,3 @@ class Parameter {
     return $this->_type;
   }
 }
-
