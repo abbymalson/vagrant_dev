@@ -401,4 +401,4 @@ create table tbl_ghd_sha_data (
     date_removed datetime,
 	primary key (sha_id)
 );
-ALTER TABLE `tbl_ghd_sha_data` ADD UNIQUE( `repository_id`, `branch_name`);
+# ALTER TABLE `tbl_ghd_sha_data` ADD UNIQUE( `repository_id`, `branch_name`);

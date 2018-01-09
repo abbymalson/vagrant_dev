@@ -1,6 +1,11 @@
 #! /usr/bin/php
 <?php
 
+// DEFINE CONSTANTS
+CONST BRANCH_FOUND_IN_DATABASE_DIFFERENT_SHA_VALUE      = 10;
+CONST BRANCH_FOUND_IN_DATABASE_SAME_SHA_VALUE           = 20;
+CONST BRANCH_NOT_FOUND_IN_DATABASE                      = 30;
+
 require_once "database_settings.php";
 require_once "class.database.php";
 require_once "class.parameter.php";
@@ -8,15 +13,17 @@ echo "hostname: " . gethostname() . "\n";
 switch (gethostname()) {
   case "harry-potter":
   $repo = array();
-  $repo['directory'] = "/home/weedmaps/code/weedmaps/api";
+  $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
   $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
   $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
+  $repo['repository_id'] = 1;
     break;
   default:
   $repo = array();
-  $repo['directory'] = "/home/vagrant/code/weedmaps/api";
+  $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
   $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
   $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
+  $repo['repository_id'] = 1;
     break;
 }
 
@@ -32,8 +39,23 @@ try {
   // get the repo information
   // get the sha information for the given repository
   // executeDockerCommand($dbh, 0);
+  echo "Repo";
+  print_r($repo);
+  echo "\n\n";
+  echo "RepoInformation";
+  print_r($repoInformation);
+  echo "\n\n";
+  // $repo = $repoInformation;
+  // print_r($repo);
 
-  $gitRepoBranchInformation = updateRepoInFileSystem($dbhMySql, $repo);
+
+  // $gitRepoBranchInformation = updateRepoInFileSystem($dbhMySql, $repo);
+  // $gitRepoBranchInformation = updateRepoInFileSystem($dbh, $repo);
+  //$repo = $repoInformation;
+  echo "getting Repo Information from file system";
+  print_r($repo);
+  echo "\n\n";
+  $gitRepoBranchInformation = updateRepoInFileSystem($dbh, $repo);
     // check for branch in array in database
     //if found, check branch SHA
     // if different, update branch sha info, update date, flag branch as updated
@@ -120,8 +142,13 @@ function buildParametersForSql($sth, $jsonParemters) {
 }
  */
 function updateRepoInFileSystem($databaseHandler, $repo) {
-  echo "changing into {$repo['directory']} directory ...  \n";
-  chdir($repo['directory']);
+echo "repo array"; 
+  print_r($repo);
+echo "\n\n";
+echo "there should be a repo here";
+// print_r($repo);
+  echo "changing into {$repo['local_directory_path']} directory ...  \n";
+  chdir($repo['local_directory_path']);
   $output = "";
   // git fetch; git pull;
   $output .= shell_exec('git fetch; git pull;');
@@ -132,11 +159,28 @@ function updateRepoInFileSystem($databaseHandler, $repo) {
   echo $showRef;
     // loop over output
   $data = parseDataFromShowRef($showRef);
+  $dataInDb = getPreviousBranchInformation($databaseHandler, $repo);
+  if (is_null($dataInDb)) {
+    $dataInDb = array(); // let's initialize the value if the value itself was null ...
+  }
+  print_r($dataInDb);
   foreach ($data as $row) {
-    updateBranchInformationInDatabase($databaseHandler, $repo,  $row[0], $row[1]); // SHA, branch
+    $retVal = checkDataInDatabase($dataInDb, $row[0], $row[1]);
+    switch($retVal['checkVal']) { // SHA, Branch
+    case BRANCH_FOUND_IN_DATABASE_DIFFERENT_SHA_VALUE:
+      $shaId = $retVal['sha_id'];
+      updateBranchInformationInDatabase($databaseHandler, $shaId,  $row[0]); // SHA
+      break;
+    case BRANCH_FOUND_IN_DATABASE_SAME_SHA_VALUE:
+      // Nothing for now
+      break;
+    case BRANCH_NOT_FOUND_IN_DATABASE:
+      insertBranchInformationInDatabase($databaseHandler, $repo, $row[0], $row[1]); // SHA, branch
+      break;
+    }
   }
 
-  print_r($data);
+  // print_r($data);
 }
 
 function parseDataFromShowRef($showRef) {
@@ -154,9 +198,61 @@ function parseDataFromShowRef($showRef) {
   return $data;
 }
 
+function checkDataInDatabase($data, $sha, $branch) {
+  $retVal =  array();
+  
 
-function updateBranchInformationInDatabase($dbh, $repo, $sha, $branch) {
-  $sql = "INSERT INTO (
+  if(array_key_exists($branch, $data)) {
+    if($data[$branch]['sha_value'] == $sha) {
+      $retVal['checkVal'] = BRANCH_FOUND_IN_DATABASE_SAME_SHA_VALUE;
+      return $retVal;
+    }
+    $retVal['sha_id'] = $data[$branch]['sha_id'];
+    $retVal['checkVal'] = BRANCH_FOUND_IN_DATABASE_DIFFERENT_SHA_VALUE;
+    return $retVal;
+  }
+
+
+  $retVal['checkVal'] = BRANCH_NOT_FOUND_IN_DATABASE;
+
+  return $retVal;
+}
+
+function getPreviousBranchInformation($databaseHandler, $repo) {
+  $sql = "
+    SELECT
+      sha_id,
+      repository_id,
+      sha_value,
+      branch_name,
+      date_created,
+      date_updated,
+      date_removed
+    FROM
+      tbl_ghd_sha_data
+    WHERE
+      repository_id = :repository_id
+      AND date_removed is null
+  ";
+  $repository_id = $repo['repository_id'];
+  $sth = $databaseHandler->prepare($sql);
+  $sth->bindParam(":repository_id", $repository_id, PDO::PARAM_INT);
+  $result = $sth->execute();
+  $dataResults = array();
+  if ($result  = $sth->fetchAll(PDO::FETCH_ASSOC)) {
+ // echo "there is a result\n";
+      foreach ($result as $row) {
+        $dataResults[$row['branch_name']] = $row;
+        //print_r($row);
+      }
+  print_r($dataResults);
+
+  }
+  return $dataResults;
+}
+
+function insertBranchInformationInDatabase($dbh, $repo, $sha, $branch) {
+  $sql = "INSERT INTO tbl_ghd_sha_data (
       repository_id,
       sha_value, 
       branch_name
@@ -165,17 +261,46 @@ function updateBranchInformationInDatabase($dbh, $repo, $sha, $branch) {
       :sha,
       :branch
     )
-      ON DUPLICATE KEY
-    UPDATE
-      sha_value = :sha
     ";
+  $repository_id = $repo['repository_id'];
+  $sth = $dbh->prepare($sql);
+  $sth->bindParam(":repository_id", $repository_id, PDO::PARAM_INT);
+  $sth->bindParam(":sha", $sha, PDO::PARAM_STR);
+  $sth->bindParam(":branch", $branch, PDO::PARAM_STR);
+  $res = $sth->execute();
+  /*
   $parameters = array();
   // $parameters[] = new Parameter(type, name, value);
   $parameters[] = new Parameter("integer", "repository_id", $repo['repository_id']);
   $parameters[] = new Parameter("string", "sha", $sha);
   $parameters[] = new Parameter("string", "branch", $branch);
   // echo $sql;
+   */
+  /*
   $dbh->executeSql($dbh, $sql, $parameters) ;
+   */
+}
+
+
+function updateBranchInformationInDatabase($dbh, $sha, $shaId) {
+  $sql = "
+    UPDATE tbl_ghd_sha_data 
+    SET
+      sha_value = :sha
+    WHERE
+      sha_id = :id
+    ";
+  //$parameters = array();
+  // $parameters[] = new Parameter(type, name, value);
+  //$parameters[] = new Parameter("integer", "repository_id", $repo['repository_id']);
+  //$parameters[] = new Parameter("string", "sha", $sha);
+  // $parameters[] = new Parameter("string", "branch", $branch);
+  // echo $sql;
+  $sth = $dbh->prepare($sql);
+  $sth->bindParam(":id", $shaId, PDO::PARAM_INT);
+  $sth->bindParam(":sha", $sha, PDO::PARAM_STR);
+  $res = $sth->execute();
+  // $dbh->executeSql($dbh, $sql, $parameters) ;
 }
 
 function buildStatusPageImagesUrls($repo, $branchUrlFriendlyName) {

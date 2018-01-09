@@ -29,12 +29,12 @@ try {
         // No? be sad and show fortunes every 60 loops
         // limit 1
         $sql = getJobsToDoForCliWorkersSql();
-        echo "SQL: " . $sql . "\n";
+//         echo "SQL: " . $sql . "\n";
 //        $sth = $dbh->query($sql);
         //$res = $sth->execute();
         $result = $dbh->query($sql);
         if ($result) {
-echo "there is a result\n";
+// echo "there is a result\n";
             foreach ($result as $row) {
                 $job_id = $row['cli_jobs_id'];
                 echo "starting job: " . $row['friendly_name'] . " (" . $row['date_job_submitted'] . ")\n";
