@@ -9,52 +9,120 @@ CONST BRANCH_NOT_FOUND_IN_DATABASE                      = 30;
 require_once "database_settings.php";
 require_once "class.database.php";
 require_once "class.parameter.php";
+        
+
+foreach ($argv as $arg) {
+  $e=explode("=",$arg);
+  if(count($e)==2)
+    $_GET[$e[0]]=$e[1];
+  else    
+    $_GET[]=$e[0];
+}
+
+echo "_GET:";
+var_dump($_GET);
+echo "\n";
 echo "hostname: " . gethostname() . "\n";
-switch (gethostname()) {
-  case "harry-potter":
-  $repo = array();
-  $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
-  $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
-  $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
-  $repo['repository_id'] = 1;
-    break;
+switch ($_GET[1]) {
+  case "api":
   default:
-  $repo = array();
-  $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
-  $repo['api_key'] = "47cf58e2329fe70446897e379adb72c69d37b20ca";
-  $repo['status_url'] = "https://circle.weedmaps.com/gh/GhostGroup/weedmaps_api";
-  $repo['repository_id'] = 1;
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
+    $repo['repository_id'] = 1;
+    $repo['active'] = true;
+    break;
+  case "core":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/core";
+    $repo['repository_id'] = 2;
+    $repo['active'] = false;
+    break;
+  case "ionic":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/ionic";
+    $repo['repository_id'] = 3;
+    $repo['active'] = false;
+    break;
+  case "moonshot":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/moonshot";
+    $repo['repository_id'] = 4;
+    $repo['active'] = false;
+    break;
+  case "deliveries":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/deliveries";
+    $repo['repository_id'] = 5;
+    $repo['active'] = false;
+    break;
+  case "one-time-token":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/one-time-token";
+    $repo['repository_id'] = 6;
+    $repo['active'] = false;
+    break;
+  case "feature-flag":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/feature-flag";
+    $repo['repository_id'] = 7;
+    $repo['active'] = false;
+    break;
+  case "email":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/email";
+    $repo['repository_id'] = 8;
+    $repo['active'] = false;
+    break;
+  case "platform":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/platform";
+    $repo['repository_id'] = 9;
+    $repo['active'] = false;
+    break;
+  case "feature-flag-ui":
+    $repo = array();
+    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/feature-flag-ui";
+    $repo['repository_id'] = 10;
+    $repo['active'] = false;
     break;
 }
 
 try {
-  print_r($dbSettings);
+  // print_r($dbSettings);
 	$dbh = new PDO("mysql:host={$dbSettings['server']};dbname={$dbSettings['dbname']}", $dbSettings['user'], $dbSettings['pass']);
 
-  $dbhMySql = new MysqlObj($dbSettings['server'], $dbSettings['dbname'], $dbSettings['user'], $dbSettings['pass']);
+  // $dbhMySql = new MysqlObj($dbSettings['server'], $dbSettings['dbname'], $dbSettings['user'], $dbSettings['pass']);
   // pull data from the database
   $repoInformation = getRepoInfoInDb($dbh);
+  //if ($repoInformation['active'] == 'N' || !$repo['active']) {
+  if (!$repo['active']) {
+    echo "repo['active'] == " . $repo['active']?'true':'false' . "\n";
+    // echo "repoInformation['active'] == " . $repo['active'] . "\n";
+    echo "repository is not listed as active";
+    exit();
+  }
   // based on the parameters from the job, we'll know to pull the correct repo
 
   // get the repo information
   // get the sha information for the given repository
   // executeDockerCommand($dbh, 0);
-  echo "Repo";
-  print_r($repo);
-  echo "\n\n";
-  echo "RepoInformation";
-  print_r($repoInformation);
-  echo "\n\n";
+  //echo "Repo";
+  //print_r($repo);
+  //echo "\n\n";
+  //echo "RepoInformation";
+  //print_r($repoInformation);
+  //echo "\n\n";
   // $repo = $repoInformation;
   // print_r($repo);
 
 
-  // $gitRepoBranchInformation = updateRepoInFileSystem($dbhMySql, $repo);
   // $gitRepoBranchInformation = updateRepoInFileSystem($dbh, $repo);
+  // FIXME
+  // This line breaks getting information back for some reason
   //$repo = $repoInformation;
-  echo "getting Repo Information from file system";
-  print_r($repo);
-  echo "\n\n";
+  //echo "getting Repo Information from file system";
+  //print_r($repo);
+  //echo "\n\n";
   $gitRepoBranchInformation = updateRepoInFileSystem($dbh, $repo);
     // check for branch in array in database
     //if found, check branch SHA
@@ -100,8 +168,8 @@ function getRepoInfoInDb($databaseHandler) {
     $result = $databaseHandler->query($sql);
     if ($result) {
       foreach ($result as $row) {
-        echo "repo: ";
-        print_r($row);
+        //echo "repo: ";
+        // print_r($row);
 //               echo "starting job: " . $row['friendly_name'] . " (" . $row['date_job_submitted'] . ")\n";
   //            $output = shell_exec($row['absolute_path_to_execute_job']);
    //       echo "\n";
@@ -143,9 +211,9 @@ function buildParametersForSql($sth, $jsonParemters) {
  */
 function updateRepoInFileSystem($databaseHandler, $repo) {
 echo "repo array"; 
-  print_r($repo);
-echo "\n\n";
-echo "there should be a repo here";
+  //print_r($repo);
+//echo "\n\n";
+// echo "there should be a repo here";
 // print_r($repo);
   echo "changing into {$repo['local_directory_path']} directory ...  \n";
   chdir($repo['local_directory_path']);
@@ -163,7 +231,7 @@ echo "there should be a repo here";
   if (is_null($dataInDb)) {
     $dataInDb = array(); // let's initialize the value if the value itself was null ...
   }
-  print_r($dataInDb);
+  //print_r($dataInDb);
   foreach ($data as $row) {
     $retVal = checkDataInDatabase($dataInDb, $row[0], $row[1]);
     switch($retVal['checkVal']) { // SHA, Branch
@@ -245,7 +313,7 @@ function getPreviousBranchInformation($databaseHandler, $repo) {
         $dataResults[$row['branch_name']] = $row;
         //print_r($row);
       }
-  print_r($dataResults);
+  //print_r($dataResults);
 
   }
   return $dataResults;
