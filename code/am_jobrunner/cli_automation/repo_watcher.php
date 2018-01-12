@@ -27,63 +27,63 @@ switch ($_GET[1]) {
   case "api":
   default:
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/api";
+    $repo['local_directory_path'] = "/opt/code/api";
     $repo['repository_id'] = 1;
     $repo['active'] = true;
     break;
   case "core":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/core";
+    $repo['local_directory_path'] = "/opt/code/core";
     $repo['repository_id'] = 2;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "ionic":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/ionic";
+    $repo['local_directory_path'] = "/opt/code/weedmaps_ionic";
     $repo['repository_id'] = 3;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "moonshot":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/moonshot";
+    $repo['local_directory_path'] = "/opt/code/moonshot";
     $repo['repository_id'] = 4;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "deliveries":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/deliveries";
+    $repo['local_directory_path'] = "/opt/code/deliveries";
     $repo['repository_id'] = 5;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "one-time-token":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/one-time-token";
+    $repo['local_directory_path'] = "/opt/code/one_time_token";
     $repo['repository_id'] = 6;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "feature-flag":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/feature-flag";
+    $repo['local_directory_path'] = "/opt/code/feature_flag";
     $repo['repository_id'] = 7;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "email":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/email";
+    $repo['local_directory_path'] = "/opt/code/email";
     $repo['repository_id'] = 8;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "platform":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/platform";
+    $repo['local_directory_path'] = "/opt/code/platform";
     $repo['repository_id'] = 9;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
   case "feature-flag-ui":
     $repo = array();
-    $repo['local_directory_path'] = "/home/weedmaps/code/weedmaps/feature-flag-ui";
+    $repo['local_directory_path'] = "/opt/code/feature_flag-ui";
     $repo['repository_id'] = 10;
-    $repo['active'] = false;
+    $repo['active'] = true;
     break;
 }
 
@@ -106,11 +106,11 @@ try {
   // get the repo information
   // get the sha information for the given repository
   // executeDockerCommand($dbh, 0);
-  //echo "Repo";
-  //print_r($repo);
-  //echo "\n\n";
-  //echo "RepoInformation";
-  //print_r($repoInformation);
+  echo "Repo";
+  print_r($repo);
+  echo "\n\n";
+  echo "RepoInformation";
+  print_r($repoInformation);
   //echo "\n\n";
   // $repo = $repoInformation;
   // print_r($repo);
@@ -236,13 +236,16 @@ echo "repo array";
     $retVal = checkDataInDatabase($dataInDb, $row[0], $row[1]);
     switch($retVal['checkVal']) { // SHA, Branch
     case BRANCH_FOUND_IN_DATABASE_DIFFERENT_SHA_VALUE:
+      echo "I need to update a value \n";
       $shaId = $retVal['sha_id'];
-      updateBranchInformationInDatabase($databaseHandler, $shaId,  $row[0]); // SHA
+      updateBranchInformationInDatabase($databaseHandler, $row[0], $shaId); // SHA
       break;
     case BRANCH_FOUND_IN_DATABASE_SAME_SHA_VALUE:
+      echo "I don't need to do anything\n";
       // Nothing for now
       break;
     case BRANCH_NOT_FOUND_IN_DATABASE:
+      echo "branch not found\n";
       insertBranchInformationInDatabase($databaseHandler, $repo, $row[0], $row[1]); // SHA, branch
       break;
     }
@@ -271,10 +274,13 @@ function checkDataInDatabase($data, $sha, $branch) {
   
 
   if(array_key_exists($branch, $data)) {
-    if($data[$branch]['sha_value'] == $sha) {
+      echo "SHA check! {$data[$branch]['sha_value']}  v {$sha}, {$branch} \n";
+    if($data[$branch]['sha_value'] === $sha) {
+      echo "SHA FOUND!  {$sha}, {$branch} \n";
       $retVal['checkVal'] = BRANCH_FOUND_IN_DATABASE_SAME_SHA_VALUE;
       return $retVal;
     }
+    echo "SHA did not match branch FOUND! {$data[$branch]['sha_value']}  v {$sha}, {$branch} \n";
     $retVal['sha_id'] = $data[$branch]['sha_id'];
     $retVal['checkVal'] = BRANCH_FOUND_IN_DATABASE_DIFFERENT_SHA_VALUE;
     return $retVal;
@@ -354,7 +360,8 @@ function updateBranchInformationInDatabase($dbh, $sha, $shaId) {
   $sql = "
     UPDATE tbl_ghd_sha_data 
     SET
-      sha_value = :sha
+      sha_value = :sha,
+      date_updated = NOW()
     WHERE
       sha_id = :id
     ";
@@ -363,11 +370,14 @@ function updateBranchInformationInDatabase($dbh, $sha, $shaId) {
   //$parameters[] = new Parameter("integer", "repository_id", $repo['repository_id']);
   //$parameters[] = new Parameter("string", "sha", $sha);
   // $parameters[] = new Parameter("string", "branch", $branch);
-  // echo $sql;
+  echo $sql;
+  echo "updating branch information: {$shaId} with {$sha} \n";
   $sth = $dbh->prepare($sql);
   $sth->bindParam(":id", $shaId, PDO::PARAM_INT);
   $sth->bindParam(":sha", $sha, PDO::PARAM_STR);
   $res = $sth->execute();
+  // echo $res?'successful':'unsuccessful' ;
+    // echo  "\n";;
   // $dbh->executeSql($dbh, $sql, $parameters) ;
 }
 

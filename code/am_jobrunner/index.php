@@ -6,8 +6,8 @@
   <p>Workflow Automation, is a wonderful thing. This will help move jobs down the line.</p>
 	<p>This will accept certain job types and run them in the background so you don't have to.
 	</p>
-	<p><a href="form.php">Click Here</a> to add a new item.
-	</p>
+	<p><a href="form.php">Click Here</a> to add a new item. </p>
+	<p><a href="form-repository.php">Click Here</a> to add a new repository. </p>
 <div id="job_groups">
   <!-- Job Groups -->
   <h2>Job Groups</h2>

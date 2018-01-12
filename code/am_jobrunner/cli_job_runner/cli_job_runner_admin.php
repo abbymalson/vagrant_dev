@@ -234,12 +234,20 @@ function markJobComplete($databaseHandler, $job_id, $output) {
         UPDATE 
           tbl_jr_cli_jobs
         SET 
-          date_job_completed = NOW(), 
+          date_job_completed = NOW()
+          WHERE 
+          cli_jobs_id = :job_id";
+      $stmt = $databaseHandler->prepare($sql);
+          $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+        $stmt->execute();
+      $sql = "
+        UPDATE 
+          tbl_jr_cli_jobs
+        SET 
           results_full = :results_full 
           WHERE 
           cli_jobs_id = :job_id";
       $stmt = $databaseHandler->prepare($sql);
-         // echo "markJobComplete sql: " . $sql . "\n"; 
           $stmt->bindValue(':results_full', $output, PDO::PARAM_STR);
           // $stmt->bindValue(':results_parsed', $output, PDO::PARAM_STR); // parsed field is too small ...
           $stmt->bindValue(':job_id', $job_id, PDO::PARAM_INT);
@@ -258,7 +266,7 @@ function markJobComplete($databaseHandler, $job_id, $output) {
 function automaticJobsToAdd($databaseHandler, $jobsToAdd) {
     try {
 
-      $stmt = $databaseHandler->prepare("
+      $sql = "
         INSERT INTO tbl_jr_cli_jobs
           SET
             job_group_id = :job_group_id,
@@ -266,7 +274,8 @@ function automaticJobsToAdd($databaseHandler, $jobsToAdd) {
             user_id = :user_id,
             cli_job_type_id = :cli_job_type_id,
             params = :params
-        ");
+        ";
+        $stmt = $databaseHandler->prepare($sql);
         echo "automatic Jobs to Add sql: " . $sql . "\n"; 
         foreach ($jobsToAdd as $data) {
           $stmt->bindValue(':job_group_id', $data['job_group_id'], PDO::PARAM_INT);
